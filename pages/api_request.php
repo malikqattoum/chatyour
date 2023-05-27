@@ -82,6 +82,11 @@ if (isset($data["load"])) {
 } else if (isset($data["realtime"])) {
     include 'fns/realtime/load.php';
     realtime($data);
+} else if (isset($data["rate"])) {
+    include 'fns/add/backend/rating_handler.php';
+    $response = rate($data);
+    echo json_encode($response);
+    return;
 }
 
 ?>

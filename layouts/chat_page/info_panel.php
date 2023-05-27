@@ -1,3 +1,15 @@
+<style>
+/* Selector for the rating div */
+.bi-star-fill {
+    color:gold;
+}
+
+.rating {
+    padding: 0 20px;
+}
+
+</style>
+
 <div class="col-md-5 col-lg-3 info_panel d-none page_column" column="fourth">
     <div class="fixed_header">
         <div class="icons">
@@ -59,8 +71,14 @@
 
     <div class="content">
         <div class="fields"></div>
+        <div class="message" id="message"></div>
+        <div class="rating">
+            <span class="ratingStars"></span>
+            <button class="rate btn btn-primary btn-sm" id="rateBtn">Rate</button>
+        </div>
     </div>
 
+    <span id="panel_user_id"></span>
 
     <?php
     if (isset($site_adverts['info_panel'])) {

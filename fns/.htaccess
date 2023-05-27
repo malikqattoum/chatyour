@@ -1,1 +1,9 @@
-deny from all
+RewriteEngine On
+RewriteBase /
+
+# Allow access to all files in fns/add/backend directory
+RewriteRule ^fns/add/backend/ - [L]
+
+# Deny access to all other files
+RewriteCond %{REQUEST_URI} !^/fns/add/backend/.*
+RewriteRule ^fns/.*$ - [F,L]

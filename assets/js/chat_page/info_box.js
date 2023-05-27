@@ -44,6 +44,55 @@ $('.main .close_info_panel').on('click', function(e) {
     $('.main .formbox').addClass('d-none');
 });
 
+ 
+ $(".rate").click(function() {
+    userRating = $('.bi-star-fill').length;
+     const userId = parseInt($('#panel_user_id').attr('data-id'));
+     const csrfToken = $('meta[name="csrf-token"]').attr('content');
+     var messageElem = $('#message');
+     // Add the CSRF token to $.ajaxSetup()
+     $.ajaxSetup({
+         beforeSend: function(xhr, settings) {
+             if (settings.type.toUpperCase() === 'POST' || settings.type.toUpperCase() === 'PUT' || settings.type.toUpperCase() === 'DELETE') {
+                 xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+             }
+         }
+     });
+     var site_url = $.trim($('base').attr('href'));
+     var api_request_url = site_url+'api_request/';
+     $.ajax({
+         url: api_request_url,
+         type: "POST",
+         data: {
+             rating: userRating,
+             user_id: userId,
+             rate:true,
+             csrf_token:csrfToken,
+         },
+         success: function(response) {
+             console.log(response);
+             response = $.parseJSON(response);
+             if(response.success) {
+                 messageElem.html('<p class="alert alert-success" id="messageAlert">'+response.message+'</p>');
+
+                 // Hide the message after 2 seconds
+                 setTimeout(function() {
+                     $('#messageAlert').hide();
+                 }, 2000);
+             }
+         },
+         error: function(jqXHR, textStatus, errorThrown) {
+             messageElem.html('<p class="alert alert-danger" id="messageAlert">Error: ' + error + '</p>');
+
+             // Hide the message after 2 seconds
+             setTimeout(function() {
+                 $('#messageAlert').hide();
+             }, 2000);
+             console.error(textStatus, errorThrown);
+         }
+     });
+ });
+
 
 function get_info(data) {
 
@@ -148,7 +197,6 @@ function get_info(data) {
                     $('.main .info_panel > .controls > div > span').html('');
 
                     if (data.button !== undefined) {
-
                         $('.main .info_panel > .controls > div > span').removeAttr('class');
                         $('.main .info_panel > .controls > div > span').addClass(data.button.class);
                         $('.main .info_panel > .controls > div > span').html('<span></span>');
@@ -318,6 +366,54 @@ function get_info(data) {
                                 contents = contents+'</div>';
                             }
                         });
+                    }
+
+                    if (data.rating !== undefined) {
+                        const rating = data.rating;
+                        const ratingValue = rating.value;
+                        let output = '';
+
+                        for (let i = 1; i <= ratingValue; i++) {
+                            output += '<i class="star empty bi bi-star-fill"></i>';
+                        }
+
+                        for (let i = parseInt(ratingValue) + 1; i <= 5; i++) {
+                            output += '<i class="star empty bi bi-star"></i>';
+                        }
+
+                        document.querySelector('.ratingStars').innerHTML = output;
+                        
+                        if(rating.btn)
+                        {
+                            $('#rateBtn').show();
+                        }
+                        else
+                        {
+                            $('#rateBtn').hide();
+                        }
+                        
+                        if(data.current_user_id != data.panel_user_id)
+                        {
+                            $('#panel_user_id').attr('data-id', data.panel_user_id);
+                            // get all the stars
+                            const stars = document.querySelectorAll(".rating .ratingStars i.star");
+                            // loop through the stars
+                            stars.forEach((star, index) => {
+                                // add event listener for mouseover event
+                                star.addEventListener("click", () => {
+                                    // add the "filled" class to the current star and all the preceding stars
+                                    for (let i = 0; i <= index; i++) {
+                                        stars[i].classList.remove("bi-star");
+                                        stars[i].classList.add("bi-star-fill");
+                                    }
+                                    // remove the "selected" class from all the following stars
+                                    for (let i = index + 1; i < stars.length; i++) {
+                                        stars[i].classList.add("bi-star");
+                                        stars[i].classList.remove("bi-star-fill");
+                                    }
+                                });
+                            });
+                        }
                     }
 
                     $('.main .info_panel > .content > .fields').html(contents);

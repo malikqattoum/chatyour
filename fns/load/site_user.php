@@ -57,6 +57,12 @@ if ((int)$user_id !== (int)Registry::load('current_user')->id) {
 $where["site_users.user_id"] = $user_id;
 $where["LIMIT"] = 1;
 
+$userRating = DB::connect()->select('ratings', ['rating'], 
+[
+    'rated_user_id'=>$user_id,
+    'ORDER'=>['created_at'=>'DESC'],
+    'LIMIT' => 1
+]);
 
 $user = DB::connect()->select('site_users', $join, $columns, $where);
 
@@ -71,6 +77,20 @@ if (isset($user[0])) {
     }
 
     unset($output['error']);
+    if(Registry::load('current_user')->logged_in && (int)$user_id === (int)Registry::load('current_user')->id)
+    {
+        $output['rating']['btn'] = 0;
+    }
+    else
+    {
+        $output['rating']['btn'] = 1;
+    }
+
+    $output['rating']['value'] = $userRating[0]['rating']??0;
+
+    $output['current_user_id'] = (int)Registry::load('current_user')->id??0;
+
+    $output['panel_user_id'] = $user_id??0;
 
     $output['loaded'] = new stdClass();
     $output['loaded']->heading = $user['display_name'];
