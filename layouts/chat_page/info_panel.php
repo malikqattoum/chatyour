@@ -4,8 +4,16 @@
     color:gold;
 }
 
-.rating {
+.rating, .users-rating {
     padding: 0 20px;
+}
+
+.users-rating .rating-label {
+    margin-bottom: 0;
+}
+
+#rateBtn {
+    display: none;
 }
 
 </style>
@@ -76,6 +84,8 @@
             <span class="ratingStars"></span>
             <button class="rate btn btn-primary btn-sm" id="rateBtn">Rate</button>
         </div>
+        <hr>
+        <div class="users-rating"></div>
     </div>
 
     <span id="panel_user_id"></span>

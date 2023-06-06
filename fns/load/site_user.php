@@ -57,11 +57,24 @@ if ((int)$user_id !== (int)Registry::load('current_user')->id) {
 $where["site_users.user_id"] = $user_id;
 $where["LIMIT"] = 1;
 
-$userRating = DB::connect()->select('ratings', ['rating'], 
+$userRatings = [];
+
+if ((Registry::load('current_user')->logged_in && (int)$user_id === (int)Registry::load('current_user')->id && role(['permissions' => ['ratings' => 'view_who_rated_you']]))
+|| (Registry::load('current_user')->logged_in && (int)$user_id !== (int)Registry::load('current_user')->id && role(['permissions' => ['ratings' => 'view_who_rated_others']]))) {
+    $ratingsJoin["[>]site_users"] = ["ratings.rating_user_id" => "user_id"];
+    
+    $userRatings = DB::connect()->select('ratings', $ratingsJoin, ['rating', 'site_users.display_name'], 
+    [
+        'rated_user_id'=>$user_id,
+        'ORDER'=>['created_at'=>'DESC'],
+    ]);
+}
+
+$currentUserPanelUserRating = DB::connect()->select('ratings', ['rating'], 
 [
     'rated_user_id'=>$user_id,
     'ORDER'=>['created_at'=>'DESC'],
-    'LIMIT' => 1
+    'LIMIT'=>1,
 ]);
 
 $user = DB::connect()->select('site_users', $join, $columns, $where);
@@ -77,16 +90,28 @@ if (isset($user[0])) {
     }
 
     unset($output['error']);
+
     if(Registry::load('current_user')->logged_in && (int)$user_id === (int)Registry::load('current_user')->id)
     {
-        $output['rating']['btn'] = 0;
+        $output['currentUserPanelUserRating']['btn'] = 0;
     }
     else
     {
-        $output['rating']['btn'] = 1;
+        $output['currentUserPanelUserRating']['btn'] = 1;
     }
 
-    $output['rating']['value'] = $userRating[0]['rating']??0;
+    if($currentUserPanelUserRating)
+    {
+        $output['currentUserPanelUserRating']['name'] = $currentUserPanelUserRating[0]['display_name']??'';
+        $output['currentUserPanelUserRating']['value'] = $currentUserPanelUserRating[0]['rating']??0;
+    }
+
+    $ratingCounter = 0;
+    foreach($userRatings as $rating) { 
+        $output['ratings'][$ratingCounter]['name'] = $rating['display_name']??'';
+        $output['ratings'][$ratingCounter]['value'] = $rating['rating']??0;
+        $ratingCounter++;
+    }
 
     $output['current_user_id'] = (int)Registry::load('current_user')->id??0;
 

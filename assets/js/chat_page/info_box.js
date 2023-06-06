@@ -46,7 +46,7 @@ $('.main .close_info_panel').on('click', function(e) {
 
  
  $(".rate").click(function() {
-    userRating = $('.bi-star-fill').length;
+    userRating = $('.rating .ratingStars .bi-star-fill').length;
      const userId = parseInt($('#panel_user_id').attr('data-id'));
      const csrfToken = $('meta[name="csrf-token"]').attr('content');
      var messageElem = $('#message');
@@ -368,17 +368,27 @@ function get_info(data) {
                         });
                     }
 
-                    if (data.rating !== undefined) {
-                        const rating = data.rating;
+                    if (data.currentUserPanelUserRating !== undefined) {
+                        const rating = data.currentUserPanelUserRating;
                         const ratingValue = rating.value;
-                        let output = '';
 
-                        for (let i = 1; i <= ratingValue; i++) {
-                            output += '<i class="star empty bi bi-star-fill"></i>';
+                        let output = '<h6>Rate:</h6>';
+
+                        if(ratingValue)
+                        {
+                            for (let i = 1; i <= ratingValue; i++) {
+                                output += '<i class="star empty bi bi-star-fill"></i>';
+                            }
+    
+                            for (let i = parseInt(ratingValue) + 1; i <= 5; i++) {
+                                output += '<i class="star empty bi bi-star"></i>';
+                            }
                         }
-
-                        for (let i = parseInt(ratingValue) + 1; i <= 5; i++) {
-                            output += '<i class="star empty bi bi-star"></i>';
+                        else
+                        {
+                            for (let i = 1; i <= 5; i++) {
+                                output += '<i class="star empty bi bi-star"></i>';
+                            }
                         }
 
                         document.querySelector('.ratingStars').innerHTML = output;
@@ -414,6 +424,28 @@ function get_info(data) {
                                 });
                             });
                         }
+                    }
+
+                    if(data.ratings !== undefined)
+                    {
+                        const ratings = data.ratings;
+                        let output = '<h6>User Ratings:</h6>';
+                        ratings.forEach(function(rating, index) {
+                            const ratingValue = rating.value;
+                            const ratingName = rating.name;
+                            output += '<p class="rating-label"><label for="' + ratingName +'">' + ratingName + '</label></p>';
+                            output += '<p>';
+                            for (let i = 1; i <= ratingValue; i++) {
+                                output += '<i class="star empty bi bi-star-fill"></i>';
+                            }
+    
+                            for (let i = parseInt(ratingValue) + 1; i <= 5; i++) {
+                                output += '<i class="star empty bi bi-star"></i>';
+                            }
+                            output += '</p>';
+                        });
+                        document.querySelector('.users-rating').innerHTML = output;
+
                     }
 
                     $('.main .info_panel > .content > .fields').html(contents);

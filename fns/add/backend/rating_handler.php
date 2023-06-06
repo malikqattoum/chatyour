@@ -40,6 +40,14 @@ function rate($data, $private_data = null) {
         ]);
     }
 
+    DB::connect()->insert("site_notifications", [
+        "user_id" => $userId,
+        "notification_type" => 'rated_user',
+        "related_user_id" => $currentUserId,
+        "created_on" => Registry::load('current_user')->time_stamp,
+        "updated_on" => Registry::load('current_user')->time_stamp,
+    ]);
+
     // Return a success message
     return ['success'=>true, 'message' => 'Rating Submitted!'];
 }

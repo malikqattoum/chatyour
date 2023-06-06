@@ -284,6 +284,17 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "clear_chat_history" => Registry::load('strings')->clear_chat_history,
     ];
 
+    $form['fields']->ratings = [
+        "title" => Registry::load('strings')->ratings, "tag" => 'checkbox', "class" => 'field'
+    ];
+
+    $form['fields']->ratings['options'] = [
+        "view_ratings" => Registry::load('strings')->view_ratings,
+        "view_who_rated_you" => Registry::load('strings')->view_who_rated_you,
+        "view_who_rated_others" => Registry::load('strings')->view_who_rated_others,
+        "update_your_rating" => Registry::load('strings')->update_your_rating,
+    ];
+
     $form['fields']->group_join_limit = [
         "title" => Registry::load('strings')->group_join_limit, "tag" => 'input', "type" => 'number', "class" => 'field', "value" => 100
     ];
@@ -562,6 +573,7 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "profanity_filter" => Registry::load('strings')->profanity_filter,
         "message_scheduler" => Registry::load('strings')->message_scheduler,
         "cron_jobs" => Registry::load('strings')->cron_jobs,
+        "ratings" => Registry::load('strings')->ratings,
     ];
 
 
@@ -591,7 +603,6 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         }
 
     }
-
 }
 
 ?>

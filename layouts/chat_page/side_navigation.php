@@ -363,6 +363,10 @@
                 $module_permissions['message_scheduler'] = true;
             }
 
+            if (role(['permissions' => ['super_privileges' => 'ratings']])) {
+                $module_permissions['ratings'] = true;
+            }
+
             if (!empty($module_permissions)) {
                 ?>
                 <li class="has_child">
@@ -459,6 +463,14 @@
                                 ?>
                                 <li class="load_aside" load="cron_jobs">
                                     <?php echo Registry::load('strings')->cron_jobs ?>
+                                </li>
+                                <?php
+                            } ?>
+                            <?php
+                            if (isset($module_permissions['ratings'])) {
+                                ?>
+                                <li class="load_aside" load="ratings">
+                                    <?php echo Registry::load('strings')->ratings ?>
                                 </li>
                                 <?php
                             } ?>
