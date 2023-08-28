@@ -31,7 +31,7 @@ $columns = [
     'site_users.user_id', 'site_users.display_name', 'site_users.username', 'site_users.site_role_id',
     'site_users_settings.deactivated', 'site_users.online_status', 'site_users_settings.offline_mode', 'site_users.approved',
     'site_users.email_address', 'site_users.stay_online', 'site_users.total_friends', 'site_users.created_on',
-    'site_users.phone_number', 'site_users.phone_verified'
+    'site_users.phone_number', 'site_users.phone_verified', 'site_users.is_banned_receive_coins', 'site_users.is_banned_send_coins'
 ];
 
 
@@ -172,6 +172,75 @@ if (isset($user[0])) {
             } else {
                 $show_message_button = true;
             }
+
+            if (Registry::load('settings')->coins_feature === 'enable') {
+                // Existing code...
+                if(!$user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'allow_conversion']])
+                    &&
+                    role(['permissions' => ['coins' => 'receive_conversions'], 'role_id'=>$user['site_role_id']])
+                    &&
+                    Registry::load('settings')->coin_conversions === 'enable'
+                    &&
+                    ($friends || (!$friends && role(['permissions' => ['coins' => 'convert_coins_to_non_friends']])))
+                    ) {
+                    // Add the "Send Coins" option
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->send_coins;
+                    $output['options'][$option_index]->class = 'send_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+                // Add the "Send Coins" option
+                if(!$user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'add_coins_to_members']])) {
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->grant_coins;
+                    $output['options'][$option_index]->class = 'grant_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+    
+                if(role(['permissions' => ['coins' => 'deduct_coins_from_members']]) && !role(['permissions' => ['coins' => 'can_deduct_from_who_can_deduct_coins'], 'role_id'=>$user['site_role_id']])) {
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->remove_coins;
+                    $output['options'][$option_index]->class = 'remove_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+    
+                if(!$user['is_banned_send_coins'] && role(['permissions' => ['coins' => 'ban_member_from_sending_coins']]))
+                {
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->ban_send_coins;
+                    $output['options'][$option_index]->class = 'ban_send_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+    
+                if(!$user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'ban_member_from_receiving_coins']])) {
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->ban_receive_coins;
+                    $output['options'][$option_index]->class = 'ban_receive_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+    
+                if($user['is_banned_send_coins'] && role(['permissions' => ['coins' => 'ban_member_from_sending_coins']])) {
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->unban_send_coins;
+                    $output['options'][$option_index]->class = 'unban_send_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+    
+                if($user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'ban_member_from_receiving_coins']])) {
+                    $output['options'][$option_index] = new stdClass();
+                    $output['options'][$option_index]->title = Registry::load('strings')->unban_receive_coins;
+                    $output['options'][$option_index]->class = 'unban_receive_coins_button';
+                    $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $option_index++;
+                }
+            }
+
         } else if (role(['permissions' => ['profile' => 'edit_profile']])) {
             $output['button'] = new stdClass();
             $output['button']->class = 'button';
@@ -693,7 +762,7 @@ if (isset($user[0])) {
             $badges[2]['image'] = get_image(['from' => 'group_roles', 'search' => $group_member_info[0]['group_role_id']]);
         }
     }
-
+    
     $columns = $join = $where = null;
     $columns = [
         'badges.string_constant', 'badges_assigned.badge_id',
@@ -813,6 +882,17 @@ if (isset($user[0])) {
             $output['content'][4]->field['title'] = Registry::load('strings')->your_friend_since;
             $output['content'][4]->field['value'] = get_date($friends_since);
         }
+    }
+
+    if((role(['permissions' => ['coins' => 'see_members_coins_balance']]) && (int)$user_id !== (int)Registry::load('current_user')->id) || (int)$user_id == (int)Registry::load('current_user')->id) {
+        $where = ['user_id' => $user_id];
+        $where["LIMIT"] = 1;
+        $coins = DB::connect()->select('user_coins', 'coins_balance', $where);
+
+        $output['content'][13] = new stdClass();
+        $output['content'][13]->field['title'] = Registry::load('strings')->coins;
+        $output['content'][13]->field['title_img'] = Registry::load('config')->site_url.'assets/files/defaults/gold-coin.png';
+        $output['content'][13]->field['value'] = $coins[0]??0;
     }
 
 }

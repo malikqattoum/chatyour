@@ -292,6 +292,48 @@
                 <?php
             }
             ?>
+
+
+            <?php if (role(['permissions' => ['coins' => 'coins']]) && Registry::load('settings')->coins_feature === 'enable') {
+                ?>
+                <li class="has_child">
+                    <div class="menu_item">
+                        <span class="icon">
+                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 1024 1024">
+                                <path fill="currentColor" d="M689.1 512.7c-17.1 0-34.3-12.9-42.9-30-8.6-21.4 8.6-47.1 30-51.4 47.1-12.9 81.4-51.4 94.3-94.3 17.1-68.6-25.7-141.4-94.3-158.6-21.4-4.3-38.6-30-30-51.4 4.3-21.4 30-38.6 51.4-30 111.4 25.7 184.3 145.7 154.3 261.5-21.4 77.2-81.4 132.9-154.3 154.3h-8.5zM374 89.1c-117.7 0-213.1 95.4-213.1 213.1s95.4 213 213.1 213 213.1-95.4 213.1-213.1-95.4-213-213.1-213zM374 423.1c-66.8 0-121-54.1-121-120.9s54.2-121 121-121 120.9 54.1 120.9 120.9-54.1 121-120.9 121zM552.8 600.9h-345.5c-114 0-207.3 93.3-207.3 207.3v80.6c0 25.3 20.7 46.1 46.1 46.1s46.1-20.6 46.1-46.1v-92.1c0-57.2 46.4-103.7 103.7-103.7h368.6c57.2 0 103.7 46.4 103.7 103.7v92.1c0 25.4 20.6 46.1 46.1 46.1 25.3 0 46.1-20.7 46.1-46.1v-80.6c-0.2-114-93.5-207.3-207.6-207.3zM825.1 601.1c-1.4-0.1-2.7-0.2-4.1-0.2-25.4 0-46.1 20.6-46.1 46.1 0 25.4 20.6 46.1 46.1 46.1h7.2c57.2 0 103.7 46.4 103.7 103.7v92.1c0 25.4 20.6 46.1 46.1 46.1 25.3 0 46.1-20.7 46.1-46.1v-80.6c-0.1-111.3-88.8-202.7-199-207.2z"></path>
+                            </svg>
+
+                        </span>
+                        <span class="title">
+                            <?php echo(Registry::load('strings')->coins) ?>
+                        </span>
+                    </div>
+                    <div class="child_menu">
+                        <ul>
+                            <?php
+                                if(Registry::load('settings')->coin_purchase_packages === 'enable') {
+                                    ?>
+                                    <li class="load_aside" load="coin_package"><?php echo(Registry::load('strings')->coins_packages) ?></li>
+                                <?php } 
+                                if(role(['permissions' => ['groups' => 'super_privileges']])) { ?>
+                                    <li class="load_aside" load="coin_log"><?php echo(Registry::load('strings')->coins_log) ?></li>
+                                    <li class="load_aside" load="coin_richest"><?php echo(Registry::load('strings')->richest_of_coins) ?></li>
+                                        <?php if(Registry::load('settings')->coin_purchase_packages === 'enable') { ?>
+                                            <li class="load_aside" load="purchase_requests"><?php echo(Registry::load('strings')->purchase_requests) ?></li>
+                                        
+                                        <?php
+                                        }
+                                }
+                            
+                            ?>
+                        </ul>
+                    </div>
+                </li>
+                <?php
+            }
+            ?>
+
+
             <?php
             $module_permissions = array();
 
@@ -489,6 +531,10 @@
                 $settings_permissions['customizer'] = true;
             }
 
+            if (role(['permissions' => ['coins' => 'coins']])) {
+                $settings_permissions['coins'] = true;
+            }
+
             if (!empty($settings_permissions)) {
                 ?>
                 <li class="has_child">
@@ -568,6 +614,10 @@
                                 <li class="load_form" form="welcome_screen" todo="edit">
                                     <?php echo(Registry::load('strings')->welcome_screen) ?>
                                 </li>
+
+                                <li class="load_form" form="settings" data-category="payment_info">
+                                    <?php echo(Registry::load('strings')->payment_info) ?>
+                                </li>
                                 <?php
                             }
                             if (isset($settings_permissions['customizer'])) {
@@ -608,6 +658,14 @@
                                 <?php
                             }
                             ?>
+                            <?php
+                                if (isset($settings_permissions['coins'])) {
+                                ?>
+                                    <li class="load_form" form="settings"  todo="edit" data-category="coins">
+                                        <?php echo Registry::load('strings')->coins ?>
+                                    </li>
+                                <?php
+                            } ?>
                         </ul>
                     </div>
                 </li>

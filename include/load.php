@@ -14,7 +14,7 @@ $config = (object) array_merge((array) $config, (array) get_url());
 
 Registry::add('config', $config);
 
-if (Registry::load('config')->developer_mode) {
+if (Registry::load('config')->developer_mode || 1) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);

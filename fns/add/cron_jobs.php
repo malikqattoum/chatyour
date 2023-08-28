@@ -5,7 +5,7 @@ $result['success'] = false;
 $result['error_message'] = Registry::load('strings')->something_went_wrong;
 $result['error_key'] = 'something_went_wrong';
 $noerror = true;
-$cron_jobs = ["delete_group_messages", "delete_private_messages", "delete_site_users", "delete_user_files"];
+$cron_jobs = ["delete_group_messages", "delete_private_messages", "delete_site_users", "delete_user_files", "delete_coin_actions_log"];
 
 if (role(['permissions' => ['super_privileges' => 'cron_jobs']])) {
 

@@ -52,6 +52,54 @@ if (Registry::load('settings')->friend_system === 'enable') {
                                 "updated_on" => Registry::load('current_user')->time_stamp,
                             ]);
 
+                            $friend_counter = DB::connect()->select("friends_counter", "temp_friends_count", ["user_id" => $current_user_id]);
+
+                            if(!empty($friend_counter))
+                            {
+                                if($friend_counter[0] == ((int)Registry::load('settings')->number_of_friends_for_coins - 1))
+                                {
+                                    DB::connect()->update(
+                                        "friends_counter",
+                                        ["temp_friends_count" => 0],
+                                        ["user_id" => $current_user_id]
+                                    );
+                                    $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $current_user_id]);
+    
+                                    if (!empty($recipient_coin_balance)) {
+                                        // Update recipient's balance
+                                        DB::connect()->update(
+                                            "user_coins",
+                                            ["coins_balance" => ((int)$recipient_coin_balance[0] + (int)Registry::load('settings')->coins_amount_per_friends)],
+                                            ["user_id" => $current_user_id]
+                                        );
+                                    } else {
+                                        // Insert recipient's balance record
+                                        DB::connect()->insert(
+                                            "user_coins",
+                                            ["user_id" => $current_user_id, "coins_balance" => (int)Registry::load('settings')->coins_amount_per_friends]
+                                        );
+                                    }
+                                }
+                                else
+                                {
+                                    DB::connect()->update(
+                                        "friends_counter",
+                                        ["temp_friends_count" => ((int)$friend_counter[0] + 1)],
+                                        ["user_id" => $current_user_id]
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                DB::connect()->insert(
+                                    "friends_counter",
+                                    ["user_id" => $current_user_id, "temp_friends_count" => 1]
+                                );
+                            }
+
+
+
+
                             if (isset(Registry::load('settings')->send_push_notification->on_friend_request)) {
                                 include_once('fns/push_notification/load.php');
 

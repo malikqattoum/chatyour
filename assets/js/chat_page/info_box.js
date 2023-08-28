@@ -516,3 +516,246 @@ $('.main').on('click', '.load_info_records', function(e) {
         });
     }
 });
+
+$(document).ready(function() {
+    // Event handler for the "Send Coins" button
+    $(document).on('click', '.send_coins_button', function() {
+        var user_id = $(this).data('user_id');
+        var coins_to_send = parseInt(prompt('Enter the number of coins to send:'));
+
+        if (!isNaN(coins_to_send) && coins_to_send > 0) {
+            $.ajax({
+                type: 'POST',
+                url: api_request_url, // The URL of your backend PHP script
+                data: {
+                    recipient_user_id: user_id,
+                    coins_to_send: coins_to_send,
+                    add:'coin_send'
+                },
+                async:true,
+                success: function(response) {
+                    response = $.parseJSON(response);
+                    if (response.success === true) {
+                        alert('Coins sent successfully.');
+                        var data = {
+                            load: 'site_user',
+                            user_id: user_id
+                        };
+                        data = $.extend(data, $(this).data());
+                        get_info(data);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while sending coins.');
+                }
+            });
+        } else {
+            alert('Invalid number of coins to send.');
+        }
+    });
+
+    $(document).on('click', '.grant_coins_button', function() {
+        var user_id = $(this).data('user_id');
+        var coins_to_grant = parseInt(prompt('Enter the number of coins to grant:'));
+
+        if (!isNaN(coins_to_grant) && coins_to_grant > 0) {
+            $.ajax({
+                type: 'POST',
+                url: api_request_url, // The URL of your backend PHP script
+                data: {
+                    recipient_user_id: user_id,
+                    coins_to_grant: coins_to_grant,
+                    add:'coin_grant'
+                },
+                async:true,
+                success: function(response) {
+                    response = $.parseJSON(response);
+                    if (response.success === true) {
+                        alert('Coins grant successfully.');
+                        var data = {
+                            load: 'site_user',
+                            user_id: user_id
+                        };
+                        data = $.extend(data, $(this).data());
+                        get_info(data);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while granting coins.');
+                }
+            });
+        } else {
+            alert('Invalid number of coins to grant.');
+        }
+    });
+
+
+    $(document).on('click', '.remove_coins_button', function() {
+        var user_id = $(this).data('user_id');
+        var coins_to_remove = parseInt(prompt('Enter the number of coins to remove:'));
+
+        if (!isNaN(coins_to_remove) && coins_to_remove > 0) {
+            $.ajax({
+                type: 'POST',
+                url: api_request_url,
+                data: {
+                    removed_user_id: user_id,
+                    coins_to_remove: coins_to_remove,
+                    add:'coin_remove'
+                },
+                async:true,
+                success: function(response) {
+                    response = $.parseJSON(response);
+                    if (response.success === true) {
+                        alert('Coins remove successfully.');
+                        var data = {
+                            load: 'site_user',
+                            user_id: user_id
+                        };
+                        data = $.extend(data, $(this).data());
+                        get_info(data);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while removing coins.');
+                }
+            });
+        } else {
+            alert('Invalid number of coins to remove.');
+        }
+    });
+
+    $(document).on('click', '.ban_send_coins_button', function() {
+        var user_id = $(this).data('user_id');
+
+        $.ajax({
+            type: 'POST',
+            url: api_request_url,
+            data: {
+                user_id: user_id,
+                ban_type: 'send',
+                add:'coin_ban'
+            },
+            async:true,
+            success: function(response) {
+                response = $.parseJSON(response);
+                if (response.success === true) {
+                    alert('User banned from sending coins successfully.');
+                    var data = {
+                        load: 'site_user',
+                        user_id: user_id
+                    };
+                    data = $.extend(data, $(this).data());
+                    get_info(data);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('An error occurred while ban sending coins.');
+            }
+        });
+    });
+
+    $(document).on('click', '.ban_receive_coins_button', function() {
+        var user_id = $(this).data('user_id');
+
+        $.ajax({
+            type: 'POST',
+            url: api_request_url,
+            data: {
+                user_id: user_id,
+                ban_type: 'receive',
+                add:'coin_ban'
+            },
+            async:true,
+            success: function(response) {
+                response = $.parseJSON(response);
+                if (response.success === true) {
+                    alert('User banned from receiving coins successfully.');
+                    var data = {
+                        load: 'site_user',
+                        user_id: user_id
+                    };
+                    data = $.extend(data, $(this).data());
+                    get_info(data);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('An error occurred while ban receiving coins.');
+            }
+        });
+    });
+
+    $(document).on('click', '.unban_send_coins_button', function() {
+        var user_id = $(this).data('user_id');
+
+        $.ajax({
+            type: 'POST',
+            url: api_request_url,
+            data: {
+                user_id: user_id,
+                unban_type: 'send',
+                add:'coin_unban'
+            },
+            async:true,
+            success: function(response) {
+                response = $.parseJSON(response);
+                if (response.success === true) {
+                    alert('User unbanned from sending coins successfully.');
+                    var data = {
+                        load: 'site_user',
+                        user_id: user_id
+                    };
+                    data = $.extend(data, $(this).data());
+                    get_info(data);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('An error occurred while unbanning send coins.');
+            }
+        });
+    });
+
+    $(document).on('click', '.unban_receive_coins_button', function() {
+        var user_id = $(this).data('user_id');
+
+        $.ajax({
+            type: 'POST',
+            url: api_request_url,
+            data: {
+                user_id: user_id,
+                unban_type: 'receive',
+                add:'coin_unban'
+            },
+            async:true,
+            success: function(response) {
+                response = $.parseJSON(response);
+                if (response.success === true) {
+                    alert('User unbanned from receiving coins successfully.');
+                    var data = {
+                        load: 'site_user',
+                        user_id: user_id
+                    };
+                    data = $.extend(data, $(this).data());
+                    get_info(data);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('An error occurred while unbanning receive coins.');
+            }
+        });
+    });
+});
