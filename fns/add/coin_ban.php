@@ -28,6 +28,14 @@ if(
                     ["is_banned_send_coins" => 1, 'coins_banned_by_user_id' => $ban_by_user_id],
                     ["user_id" => $user_id]
                 );
+
+                DB::connect()->insert("site_notifications", [
+                    "user_id" => $user_id,
+                    "notification_type" => 'ban_send_coins_notify',
+                    "related_user_id" => $ban_by_user_id,
+                    "created_on" => Registry::load('current_user')->time_stamp,
+                    "updated_on" => Registry::load('current_user')->time_stamp,
+                ]);
             }
             else
             {
@@ -36,6 +44,14 @@ if(
                     ["is_banned_receive_coins" => 1, 'coins_banned_by_user_id' => $ban_by_user_id],
                     ["user_id" => $user_id]
                 );
+
+                DB::connect()->insert("site_notifications", [
+                    "user_id" => $user_id,
+                    "notification_type" => 'ban_receive_coins_notify',
+                    "related_user_id" => $ban_by_user_id,
+                    "created_on" => Registry::load('current_user')->time_stamp,
+                    "updated_on" => Registry::load('current_user')->time_stamp,
+                ]);
             }
     
             DB::connect()->insert("coin_actions_log", [
@@ -45,18 +61,20 @@ if(
                 "coins_amount" => 0,
                 "action_date" => date("Y-m-d H:i:s")
             ]);
-            
     
             $result['success'] = true;
-            $result['message'] = 'User banned from '.$ban_type.' successfully';
+            $result['todo'] = 'reload';
+            $result['reload'] = 'site_users';
+            $result['info_box']['user_id'] = $user_id;
+            // $result['error_message'] = 'User banned from '.$ban_type.' successfully';
         } else {
             $result['success'] = false;
-            $result['message'] = 'The user is not exists';
+            $result['error_message'] = 'The user is not exists';
         }
     } else {
         // Invalid input error
         $result['success'] = false;
-        $result['message'] = 'Invalid input';
+        $result['error_message'] = 'Invalid input';
     }
 }
 

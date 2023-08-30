@@ -47,15 +47,26 @@ if(role(['permissions' => ['coins' => 'add_coins_to_members']]))
             "coins_amount" => $coins_to_grant,
             "action_date" => date("Y-m-d H:i:s")
         ]);
+
+        DB::connect()->insert("site_notifications", [
+            "user_id" => $recipient_user_id,
+            "notification_type" => 'grant_coins_notify',
+            "related_user_id" => $sender_user_id,
+            "created_on" => Registry::load('current_user')->time_stamp,
+            "updated_on" => Registry::load('current_user')->time_stamp,
+        ]);
     
         // Send success result
+        // $result['error_message'] = 'Coins granted successfully';
         $result['success'] = true;
-        $result['message'] = 'Coins granted successfully';
+        $result['todo'] = 'reload';
+        $result['reload'] = 'site_users';
+        $result['info_box']['user_id'] = $recipient_user_id;
     
     } else {
         // Send invalid input error
         $result['success'] = false;
-        $result['message'] = 'Invalid input';
+        $result['error_message'] = 'Invalid input';
     }
 }
 

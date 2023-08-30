@@ -17,7 +17,7 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
             );
         } else {
             $result['success'] = false;
-            $result['message'] = 'There is no available coins to remove';
+            $result['error_message'] = 'There is no available coins to remove';
     
             return;
         }
@@ -45,15 +45,25 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
             "coins_amount" => $coins_to_remove,
             "action_date" => date("Y-m-d H:i:s")
         ]);
+
+        DB::connect()->insert("site_notifications", [
+            "user_id" => $removed_user_id,
+            "notification_type" => 'remove_coins_notify',
+            "related_user_id" => $remover_user_id,
+            "created_on" => Registry::load('current_user')->time_stamp,
+            "updated_on" => Registry::load('current_user')->time_stamp,
+        ]);
     
-        // Send success result
+        // $result['error_message'] = 'Coins removed successfully';
         $result['success'] = true;
-        $result['message'] = 'Coins removed successfully';
+        $result['todo'] = 'reload';
+        $result['reload'] = 'site_users';
+        $result['info_box']['user_id'] = $removed_user_id;
     
     } else {
         // Send invalid input error
         $result['success'] = false;
-        $result['message'] = 'Invalid input';
+        $result['error_message'] = 'Invalid input';
     }
 }
 

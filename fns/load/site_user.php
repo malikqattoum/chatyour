@@ -186,24 +186,33 @@ if (isset($user[0])) {
                     // Add the "Send Coins" option
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->send_coins;
-                    $output['options'][$option_index]->class = 'send_coins_button';
+                    // $output['options'][$option_index]->class = 'send_coins_button';
+                    $output['options'][$option_index]->class = 'load_form';
+                    $output['options'][$option_index]->attributes['form'] = 'coin_send';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->send_coin_confirmation;
                     $option_index++;
                 }
                 // Add the "Send Coins" option
                 if(!$user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'add_coins_to_members']])) {
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->grant_coins;
-                    $output['options'][$option_index]->class = 'grant_coins_button';
+                    // $output['options'][$option_index]->class = 'grant_coins_button';
+                    $output['options'][$option_index]->class = 'load_form';
+                    $output['options'][$option_index]->attributes['form'] = 'coin_grant';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->grant_coin_confirmation;
                     $option_index++;
                 }
     
                 if(role(['permissions' => ['coins' => 'deduct_coins_from_members']]) && !role(['permissions' => ['coins' => 'can_deduct_from_who_can_deduct_coins'], 'role_id'=>$user['site_role_id']])) {
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->remove_coins;
-                    $output['options'][$option_index]->class = 'remove_coins_button';
+                    // $output['options'][$option_index]->class = 'remove_coins_button';
+                    $output['options'][$option_index]->class = 'load_form';
+                    $output['options'][$option_index]->attributes['form'] = 'coin_remove';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->remove_coin_confirmation;
                     $option_index++;
                 }
     
@@ -211,32 +220,60 @@ if (isset($user[0])) {
                 {
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->ban_send_coins;
-                    $output['options'][$option_index]->class = 'ban_send_coins_button';
+                    $output['options'][$option_index]->class = 'ask_confirmation';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['data-ban_type'] = 'send';
+                    $output['options'][$option_index]->attributes['data-add'] = 'coin_ban';
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->ban_send_coin_confirmation;
+                    $output['options'][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                    $output['options'][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                    $output['options'][$option_index]->attributes['column'] = 'fourth';
+                    $output['options'][$option_index]->attributes['data-info_box'] = true;
                     $option_index++;
                 }
     
                 if(!$user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'ban_member_from_receiving_coins']])) {
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->ban_receive_coins;
-                    $output['options'][$option_index]->class = 'ban_receive_coins_button';
+                    $output['options'][$option_index]->class = 'ask_confirmation';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['data-ban_type'] = 'receive';
+                    $output['options'][$option_index]->attributes['data-add'] = 'coin_ban';
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->ban_receive_coin_confirmation;
+                    $output['options'][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                    $output['options'][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                    $output['options'][$option_index]->attributes['column'] = 'fourth';
+                    $output['options'][$option_index]->attributes['data-info_box'] = true;
                     $option_index++;
                 }
     
                 if($user['is_banned_send_coins'] && role(['permissions' => ['coins' => 'ban_member_from_sending_coins']])) {
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->unban_send_coins;
-                    $output['options'][$option_index]->class = 'unban_send_coins_button';
+                    $output['options'][$option_index]->class = 'ask_confirmation';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['data-unban_type'] = 'send';
+                    $output['options'][$option_index]->attributes['data-add'] = 'coin_unban';
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->unban_send_coin_confirmation;
+                    $output['options'][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                    $output['options'][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                    $output['options'][$option_index]->attributes['column'] = 'fourth';
+                    $output['options'][$option_index]->attributes['data-info_box'] = true;
                     $option_index++;
                 }
     
                 if($user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'ban_member_from_receiving_coins']])) {
                     $output['options'][$option_index] = new stdClass();
                     $output['options'][$option_index]->title = Registry::load('strings')->unban_receive_coins;
-                    $output['options'][$option_index]->class = 'unban_receive_coins_button';
+                    $output['options'][$option_index]->class = 'ask_confirmation';
                     $output['options'][$option_index]->attributes['data-user_id'] = $user['user_id'];
+                    $output['options'][$option_index]->attributes['data-unban_type'] = 'receive';
+                    $output['options'][$option_index]->attributes['data-add'] = 'coin_unban';
+                    $output['options'][$option_index]->attributes['confirmation'] = Registry::load('strings')->unban_receive_coin_confirmation;
+                    $output['options'][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                    $output['options'][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                    $output['options'][$option_index]->attributes['column'] = 'fourth';
+                    $output['options'][$option_index]->attributes['data-info_box'] = true;
                     $option_index++;
                 }
             }
@@ -784,6 +821,17 @@ if (isset($user[0])) {
         $badge_index++;
     }
 
+    if((role(['permissions' => ['coins' => 'see_members_coins_balance']]) && (int)$user_id !== (int)Registry::load('current_user')->id) || (int)$user_id == (int)Registry::load('current_user')->id) {
+        $where = ['user_id' => $user_id];
+        $where["LIMIT"] = 1;
+        $coins = DB::connect()->select('user_coins', 'coins_balance', $where);
+
+        $output['content'][0] = new stdClass();
+        $output['content'][0]->field['title'] = Registry::load('strings')->coins;
+        $output['content'][0]->field['title_img'] = Registry::load('config')->site_url.'assets/files/defaults/gold-coin.png';
+        $output['content'][0]->field['value'] = $coins[0]??0;
+    }
+
     $output['content'][1] = new stdClass();
     $output['content'][1]->field['title'] = Registry::load('strings')->badges;
     $output['content'][1]->field['images'] = $badges;
@@ -882,17 +930,6 @@ if (isset($user[0])) {
             $output['content'][4]->field['title'] = Registry::load('strings')->your_friend_since;
             $output['content'][4]->field['value'] = get_date($friends_since);
         }
-    }
-
-    if((role(['permissions' => ['coins' => 'see_members_coins_balance']]) && (int)$user_id !== (int)Registry::load('current_user')->id) || (int)$user_id == (int)Registry::load('current_user')->id) {
-        $where = ['user_id' => $user_id];
-        $where["LIMIT"] = 1;
-        $coins = DB::connect()->select('user_coins', 'coins_balance', $where);
-
-        $output['content'][13] = new stdClass();
-        $output['content'][13]->field['title'] = Registry::load('strings')->coins;
-        $output['content'][13]->field['title_img'] = Registry::load('config')->site_url.'assets/files/defaults/gold-coin.png';
-        $output['content'][13]->field['value'] = $coins[0]??0;
     }
 
 }

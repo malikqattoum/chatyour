@@ -19,14 +19,14 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
         if($minimum_value_to_send_coins > $coins_to_send)
         {
             $result['success'] = false;
-            $result['message'] = 'You can\' not send less than '.$minimum_value_to_send_coins.' coins';
+            $result['error_message'] = 'You can\' not send less than '.$minimum_value_to_send_coins.' coins';
             return;
         }
 
         if($maximum_value_to_send_coins < $coins_to_send)
         {
             $result['success'] = false;
-            $result['message'] = 'You can\' not send more than '.$maximum_value_to_send_coins.' coins';
+            $result['error_message'] = 'You can\' not send more than '.$maximum_value_to_send_coins.' coins';
             return;
         }
         $sender_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $sender_user_id]);
@@ -35,7 +35,7 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
             if($available_balance_to_send_coins > $sender_balance[0])
             {
                 $result['success'] = false;
-                $result['message'] = 'You should have more than '.$available_balance_to_send_coins.' to send coins coins';
+                $result['error_message'] = 'You should have more than '.$available_balance_to_send_coins.' to send coins coins';
                 return;
             }
             // Start a transaction
@@ -75,19 +75,29 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
                 "coins_amount" => $coins_to_send,
                 "action_date" => date("Y-m-d H:i:s")
             ]);
+
+            DB::connect()->insert("site_notifications", [
+                "user_id" => $recipient_user_id,
+                "notification_type" => 'send_coins_notify',
+                "related_user_id" => $sender_user_id,
+                "created_on" => Registry::load('current_user')->time_stamp,
+                "updated_on" => Registry::load('current_user')->time_stamp,
+            ]);
     
             // Send success result
             $result['success'] = true;
-            $result['message'] = 'Coins sent successfully';
+            $result['todo'] = 'reload';
+            $result['reload'] = 'site_users';
+            $result['info_box']['user_id'] = $recipient_user_id;
         } else {
             // Send insufficient balance error
             $result['success'] = false;
-            $result['message'] = 'Insufficient balance to send coins';
+            $result['error_message'] = 'Insufficient balance to send coins';
         }
     } else {
         // Send invalid input error
         $result['success'] = false;
-        $result['message'] = 'Invalid input';
+        $result['error_message'] = 'Invalid input';
     }
 }
 

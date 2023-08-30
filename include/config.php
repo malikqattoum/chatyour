@@ -9,7 +9,7 @@ $config->site_url="http://localhost/grupo/";
 $config->force_url=false;
 $config->force_https=false;
 $config->developer_mode=false;
-$config->csrf_token=false;
+$config->csrf_token=true;
 
 $config->samesite_cookies='default';
 $config->http_only_cookies=false;
