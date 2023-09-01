@@ -1,6 +1,6 @@
 <?php
 
-if (role(['permissions' => ['coins' => 'coins']]) && role(['permissions' => ['groups' => 'super_privileges']])) {
+if (role(['permissions' => ['coins' => 'coins']])) {
 
     $columns = [
         'coin_actions_log.log_id', 'coin_actions_log.user_id', 'coin_actions_log.target_user_id',
@@ -16,6 +16,11 @@ if (role(['permissions' => ['coins' => 'coins']]) && role(['permissions' => ['gr
 
     if (!empty($data["search"])) {
         $where["performing_user_display_name[~]"] = $data["search"];
+    }
+
+    if(!role(['permissions' => ['groups' => 'super_privileges']]))
+    {
+        $where['u2.user_id'] = Registry::load('current_user')->id;
     }
 
     $where["LIMIT"] = Registry::load('settings')->records_per_call;

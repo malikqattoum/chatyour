@@ -136,4 +136,8 @@ INSERT INTO chatyour_toto.`gr_language_strings` (`string_constant`, `string_valu
 ('edit_coin_packages', 'Edit Coin Packages', 'one-line', 0, 0, 1),
 ('edit_coin_packages', 'تحرير باقات الكوينز', 'one-line', 0, 0, 2),
 ('create_coin_packages', 'Create Coin Packages', 'one-line', 0, 0, 1),
-('create_coin_packages', 'اضافة باقات الكوينز', 'one-line', 0, 0, 2)
+('create_coin_packages', 'اضافة باقات الكوينز', 'one-line', 0, 0, 2),
+('insufficient_coins_balance', 'Insufficient balance to send coins', 'one-line', 0, 0, 1),
+('insufficient_coins_balance', 'رصيد غير كافي لإرسال العملات', 'one-line', 0, 0, 2),
+('daily_conversions_limit', 'You have reached your daily conversions limit', 'one-line', 0, 0, 1),
+('daily_conversions_limit', 'لقد وصلت إلى الحد الأقصى للتحويلات اليومية', 'one-line', 0, 0, 2)

@@ -318,11 +318,13 @@
                                 <?php } if(role(['permissions' => ['coins' => 'richest_of_coins']])) { ?>
                                     <li class="load_aside" load="coin_richest"><?php echo(Registry::load('strings')->richest_of_coins) ?></li>
                                 <?php } }
-                                if(role(['permissions' => ['groups' => 'super_privileges']])) { 
-                                    if(role(['permissions' => ['coins' => 'coins_log']])) {
-                                        ?>
-                                            <li class="load_aside" load="coin_log"><?php echo(Registry::load('strings')->coins_log) ?></li>
-                                        <?php } if(Registry::load('settings')->coin_purchase_packages === 'enable' && role(['permissions' => ['coins' => 'purchase_requests']])) { ?>
+                                if(role(['permissions' => ['coins' => 'coins_log']])) {
+                                    ?>
+                                        <li class="load_aside" load="coin_log"><?php echo(Registry::load('strings')->coins_log) ?></li>
+                                <?php } 
+                                if(role(['permissions' => ['groups' => 'super_privileges']])) { ?>
+
+                                        <?php if(Registry::load('settings')->coin_purchase_packages === 'enable' && role(['permissions' => ['coins' => 'purchase_requests']])) { ?>
                                             <li class="load_aside" load="purchase_requests"><?php echo(Registry::load('strings')->purchase_requests) ?></li>
                                         
                                         <?php
