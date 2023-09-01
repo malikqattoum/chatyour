@@ -4,7 +4,7 @@ use Medoo\Medoo;
 
 $form = array();
 
-if (role(['permissions' => ['coins' => 'coins', 'coins' => 'purchase_coin_packages']])) {
+if (role(['permissions' => ['coins' => 'coins']])) {
 
     $todo = 'add';
     $form['loaded'] = new stdClass();

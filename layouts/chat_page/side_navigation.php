@@ -313,12 +313,16 @@
                             <?php
                                 if(Registry::load('settings')->coin_purchase_packages === 'enable') {
                                     ?>
+                                <?php if(role(['permissions' => ['coins' => 'view_coin_packages']])) { ?>
                                     <li class="load_aside" load="coin_package"><?php echo(Registry::load('strings')->coins_packages) ?></li>
-                                <?php } 
-                                if(role(['permissions' => ['groups' => 'super_privileges']])) { ?>
-                                    <li class="load_aside" load="coin_log"><?php echo(Registry::load('strings')->coins_log) ?></li>
+                                <?php } if(role(['permissions' => ['coins' => 'richest_of_coins']])) { ?>
                                     <li class="load_aside" load="coin_richest"><?php echo(Registry::load('strings')->richest_of_coins) ?></li>
-                                        <?php if(Registry::load('settings')->coin_purchase_packages === 'enable') { ?>
+                                <?php } }
+                                if(role(['permissions' => ['groups' => 'super_privileges']])) { 
+                                    if(role(['permissions' => ['coins' => 'coins_log']])) {
+                                        ?>
+                                            <li class="load_aside" load="coin_log"><?php echo(Registry::load('strings')->coins_log) ?></li>
+                                        <?php } if(Registry::load('settings')->coin_purchase_packages === 'enable' && role(['permissions' => ['coins' => 'purchase_requests']])) { ?>
                                             <li class="load_aside" load="purchase_requests"><?php echo(Registry::load('strings')->purchase_requests) ?></li>
                                         
                                         <?php
@@ -531,10 +535,6 @@
                 $settings_permissions['customizer'] = true;
             }
 
-            if (role(['permissions' => ['coins' => 'coins']])) {
-                $settings_permissions['coins'] = true;
-            }
-
             if (!empty($settings_permissions)) {
                 ?>
                 <li class="has_child">
@@ -618,6 +618,9 @@
                                 <li class="load_form" form="settings" data-category="payment_info">
                                     <?php echo(Registry::load('strings')->payment_info) ?>
                                 </li>
+                                <li class="load_form" form="settings"  todo="edit" data-category="coins">
+                                    <?php echo Registry::load('strings')->coins ?>
+                                </li>
                                 <?php
                             }
                             if (isset($settings_permissions['customizer'])) {
@@ -658,14 +661,6 @@
                                 <?php
                             }
                             ?>
-                            <?php
-                                if (isset($settings_permissions['coins'])) {
-                                ?>
-                                    <li class="load_form" form="settings"  todo="edit" data-category="coins">
-                                        <?php echo Registry::load('strings')->coins ?>
-                                    </li>
-                                <?php
-                            } ?>
                         </ul>
                     </div>
                 </li>

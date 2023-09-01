@@ -581,20 +581,28 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "can_deduct_from_who_can_deduct_coins" => Registry::load('strings')->can_deduct_from_who_can_deduct_coins,
         "ban_member_from_sending_coins" => Registry::load('strings')->ban_member_from_sending_coins,
         "ban_member_from_receiving_coins" => Registry::load('strings')->ban_member_from_receiving_coins,
+        "coins_log" => Registry::load('strings')->coins_log,
+        "purchase_requests" => Registry::load('strings')->purchase_requests,
+        "richest_of_coins" => Registry::load('strings')->richest_of_coins,
+        "view_coin_packages" => Registry::load('strings')->view_coin_packages,
+        "create_coin_packages" => Registry::load('strings')->create_coin_packages,
+        "edit_coin_packages" => Registry::load('strings')->edit_coin_packages,
+        "delete_coin_packages" => Registry::load('strings')->delete_coin_packages,
+        
     ];
 
     $form['fields']->minimum_value_to_convert_coins = [
-        "title" => Registry::load('strings')->minimum_value_to_convert_coins, "tag" => 'input', "type" => 'number',
+        "title" => Registry::load('strings')->minimum_value_to_convert_coins, "tag" => 'input', "type" => 'number', 'step'=>'any',
         "class" => 'field'
     ];
 
     $form['fields']->maximum_value_to_convert_coins = [
-        "title" => Registry::load('strings')->maximum_value_to_convert_coins, "tag" => 'input', "type" => 'number',
+        "title" => Registry::load('strings')->maximum_value_to_convert_coins, "tag" => 'input', "type" => 'number', 'step' => '.01',
         "class" => 'field'
     ];
 
     $form['fields']->available_balance_to_convert_coins = [
-        "title" => Registry::load('strings')->available_balance_to_convert_coins, "tag" => 'input', "type" => 'number',
+        "title" => Registry::load('strings')->available_balance_to_convert_coins, "tag" => 'input', "type" => 'number', 'step' => '.01',
         "class" => 'field'
     ];
 

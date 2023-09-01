@@ -56,30 +56,30 @@ if (role(['permissions' => ['coins' => 'coins']])) {
     $form['fields']->name = [
         "title" => Registry::load('strings')->name, "tag" => 'input', "type" => "text", "class" => 'field',
         "placeholder" => Registry::load('strings')->name,
-        "value" => $package['name']
+        "value" => $package['name']??''
     ];
 
     $form['fields']->coins = [
         "title" => Registry::load('strings')->coins, "tag" => 'input', "type" => "number", "class" => 'field',
         "placeholder" => Registry::load('strings')->coins,
-        "value" => $package['coins']
+        "value" => $package['coins']??''
     ];
 
     $form['fields']->price = [
         "title" => Registry::load('strings')->price, "tag" => 'input', "type" => "text", "class" => 'field',
         "placeholder" => Registry::load('strings')->price,
-        "value" => $package['price']
+        "value" => $package['price']??''
     ];
 
     $form['fields']->description = [
         "title" => Registry::load('strings')->description, "tag" => 'input', "type" => "text", "class" => 'field',
         "placeholder" => Registry::load('strings')->description,
-        "value" => $package['description']
+        "value" => $package['description']??''
     ];
 
     $form['fields']->active = [
         "title" => Registry::load('strings')->active, "tag" => 'select', "type" => "dropdown", "class" => 'field',
-        "value" => $package['active']
+        "value" => $package['active']??null
     ];
 
     $form['fields']->active['options'] = ['in active', 'active'];

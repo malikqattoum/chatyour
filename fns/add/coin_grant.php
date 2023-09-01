@@ -4,7 +4,7 @@ if(role(['permissions' => ['coins' => 'add_coins_to_members']]))
     if (isset($data['recipient_user_id'], $data['coins_to_grant']) && is_numeric($data['coins_to_grant'])) {
         $sender_user_id = (int)Registry::load('current_user')->id;
         $recipient_user_id = $data['recipient_user_id'];
-        $coins_to_grant = (int) $data['coins_to_grant'];
+        $coins_to_grant = (float) $data['coins_to_grant'];
     
         // Update recipient's balance
         $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $recipient_user_id]);
@@ -13,7 +13,7 @@ if(role(['permissions' => ['coins' => 'add_coins_to_members']]))
             // Update recipient's balance
             DB::connect()->update(
                 "user_coins",
-                ["coins_balance" => ((int)$recipient_coin_balance[0] + $coins_to_grant)],
+                ["coins_balance" => ((float)$recipient_coin_balance[0] + $coins_to_grant)],
                 ["user_id" => $recipient_user_id]
             );
         } else {

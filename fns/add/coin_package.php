@@ -47,6 +47,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
     if ($noerror) {
         $data['name'] = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
 
+        $isActive = 0;
         if (isset($data['active']) && $data['active'] == 1) {
             $isActive = 1;
         }
@@ -63,48 +64,14 @@ if (role(['permissions' => ['coins' => 'coins']])) {
         if (!DB::connect()->error) {
 
             $package_id = DB::connect()->id();
-            $insert_data = array();
-            $columns = [
-                'coin_packages.string_id', 'coin_packages.string_constant',
-                'coin_packages.string_value', 'coin_packages.string_type',
-                'coin_packages.skip_update', 'coin_packages.skip_cache'
-            ];
-
-            $where["coin_packages.package_id"] = 1;
-            $strings = DB::connect()->select('coin_packages', $columns, $where);
-
-            $i = 0;
-            foreach ($strings as $string) {
-                $string_field = 'string_'.$string['string_id'];
-                $string_constant = $string['string_constant'];
-                $insert_data[$i]['string_constant'] = $string['string_constant'];
-                $insert_data[$i]['string_type'] = $string['string_type'];
-                $insert_data[$i]['skip_update'] = $string['skip_update'];
-                $insert_data[$i]['skip_cache'] = $string['skip_cache'];
-                $insert_data[$i]['package_id'] = $package_id;
-
-                if (isset($importjson->$string_constant) && !empty($importjson->$string_constant)) {
-                    $insert_data[$i]['string_value'] = $importjson->$string_constant;
-                } else if (isset($data[$string_field]) && !empty($data[$string_field])) {
-                    $insert_data[$i]['string_value'] = htmlspecialchars($data[$string_field], ENT_QUOTES, 'UTF-8');
-                } else {
-                    $insert_data[$i]['string_value'] = $string['string_value'];
-                }
-
-                $i = $i+1;
-            }
-
-            if (!empty($insert_data)) {
-                DB::connect()->insert('coin_packages', $insert_data);
-            }
 
             if (isset($_FILES['icon']['name']) && !empty($_FILES['icon']['name'])) {
                 if (isImage($_FILES['icon']['tmp_name'])) {
 
                     $extension = pathinfo($_FILES['icon']['name'])['extension'];
-                    $filename = $package_id.Registry::load('config')->file_seperator.random_string(['length' => 6]).'.'.$extension;
+                    $filename = 'coin-package-'.$package_id.Registry::load('config')->file_seperator.random_string(['length' => 6]).'.'.$extension;
 
-                    if (files('upload', ['upload' => 'icon', 'folder' => 'languages', 'saveas' => $filename])['result']) {
+                    if (files('upload', ['upload' => 'icon', 'folder' => 'coins', 'saveas' => $filename])['result']) {
                         files('resize_img', ['resize' => 'coins/'.$filename, 'width' => 150, 'height' => 150, 'crop' => true]);
                     }
 

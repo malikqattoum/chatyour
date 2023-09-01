@@ -128,4 +128,12 @@ INSERT INTO chatyour_toto.`gr_language_strings` (`string_constant`, `string_valu
 ('grant_coins_button', 'Grant Coins', 'one-line', 0, 0, 1),
 ('grant_coins_button', 'منح الكوينز', 'one-line', 0, 0, 2),
 ('remove_coins_button', 'Remove Coins', 'one-line', 0, 0, 1),
-('remove_coins_button', 'ازالة الكوينز', 'one-line', 0, 0, 2)
+('remove_coins_button', 'ازالة الكوينز', 'one-line', 0, 0, 2),
+('view_coin_packages', 'View Coin Packages', 'one-line', 0, 0, 1),
+('view_coin_packages', 'عرض باقات الكوينز', 'one-line', 0, 0, 2),
+('delete_coin_packages', 'Delete Coin Packages', 'one-line', 0, 0, 1),
+('delete_coin_packages', 'حذف باقات الكوينز', 'one-line', 0, 0, 2),
+('edit_coin_packages', 'Edit Coin Packages', 'one-line', 0, 0, 1),
+('edit_coin_packages', 'تحرير باقات الكوينز', 'one-line', 0, 0, 2),
+('create_coin_packages', 'Create Coin Packages', 'one-line', 0, 0, 1),
+('create_coin_packages', 'اضافة باقات الكوينز', 'one-line', 0, 0, 2)

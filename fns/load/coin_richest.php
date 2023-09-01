@@ -1,6 +1,6 @@
 <?php
 
-if (role(['permissions' => ['coins' => 'coins']]) && role(['permissions' => ['groups' => 'super_privileges']])) {
+if (role(['permissions' => ['coins' => 'coins']]) && role(['permissions' => ['coins' => 'richest_of_coins']])) {
 
     $columns = [
         'user_coins.user_id', 'user_coins.coins_balance',

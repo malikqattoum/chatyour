@@ -47,12 +47,12 @@ if (role(['permissions' => ['coins' => 'coins']])) {
         $output['multiple_select']->attributes['confirmation'] = Registry::load('strings')->confirm_action;
     // }
 
-    // if (role(['permissions' => ['coin_packages' => 'create']])) {
+    if(role(['permissions' => ['coins' => 'create_coin_packages']])){
         $output['todo'] = new stdClass();
         $output['todo']->class = 'load_form';
         $output['todo']->title = 'Add Package';
         $output['todo']->attributes['form'] = 'coin_package';
-    // }
+    }
 
 
     if (!empty($data["offset"])) {
@@ -80,7 +80,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
         $output['loaded']->offset[] = $package['package_id'];
 
         $output['content'][$i] = new stdClass();
-        $output['content'][$i]->image = get_image(['from' => 'coin_package', 'search' => $package['package_id']]);
+        $output['content'][$i]->image = get_image(['from' => 'coins', 'search' => 'coin-package-'.$package['package_id']]);
         $output['content'][$i]->title = $package['name'];
         $output['content'][$i]->class = "coin_packages";
         $output['content'][$i]->identifier = $package['package_id'];
@@ -99,7 +99,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
         }
 
 
-        if (role(['permissions' => ['groups' => 'super_privileges']])) {
+        if(role(['permissions' => ['coins' => 'edit_coin_packages']])){
             $output['options'][$i][2] = new stdClass();
             $output['options'][$i][2]->option = Registry::load('strings')->edit;
             $output['options'][$i][2]->class = 'load_form';
@@ -115,7 +115,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
             // $output['options'][$i][3]->attributes['data-package_id'] = $package['package_id'];
         // }
 
-        if (role(['permissions' => ['groups' => 'super_privileges']])) {
+        if(role(['permissions' => ['coins' => 'delete_coin_packages']])){
             $output['options'][$i][4] = new stdClass();
             $output['options'][$i][4]->option = Registry::load('strings')->delete;
             $output['options'][$i][4]->class = 'ask_confirmation';

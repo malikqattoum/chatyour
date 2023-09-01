@@ -10,6 +10,8 @@ $current_user_info->country_code = 0;
 $current_user_info->settings_exists = false;
 $current_user_info->csrf_token = null;
 $current_user_info->allowed_file_types = '';
+$current_user_info->is_banned_receive_coins = 0;
+$current_user_info->is_banned_send_coins = 0;
 $current_user_banned = false;
 $current_time_stamp = get_date();
 $geoip_service = true;
@@ -69,7 +71,8 @@ $columns = [
     'settings.notification_tone', 'settings.deactivated', 'settings.color_scheme', 'custom_fields_values.field_value(country_code)',
     'custom_fields_values.field_value_id(country_code_field_value_id)', 'site_users.online_status', 'login_sessions.last_access(last_access)',
     'site_users.geo_latitude', 'site_users.geo_longitude', 'site_users.last_seen_on', 'login_sessions.log_device', 'login_sessions.login_from_user_id',
-    'site_roles.site_role_attribute', 'login_sessions.csrf_token', 'login_sessions.csrf_token_generated_on', 'login_sessions.login_session_id'
+    'site_roles.site_role_attribute', 'login_sessions.csrf_token', 'login_sessions.csrf_token_generated_on', 'login_sessions.login_session_id',
+    'site_users.is_banned_receive_coins', 'site_users.is_banned_send_coins'
 ];
 $where = [
     "login_sessions.login_session_id" => $login_session_id,

@@ -1042,21 +1042,24 @@ if ($permission['send_message']) {
                 
                 if($message_type)
                 {
-                    $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $current_user_id]);
-    
-                    if (!empty($recipient_coin_balance)) {
-                        // Update recipient's balance
-                        DB::connect()->update(
-                            "user_coins",
-                            ["coins_balance" => ((int)$recipient_coin_balance[0] + $coins_to_be_added)],
-                            ["user_id" => $current_user_id]
-                        );
-                    } else {
-                        // Insert recipient's balance record
-                        DB::connect()->insert(
-                            "user_coins",
-                            ["user_id" => $current_user_id, "coins_balance" => $coins_to_be_added]
-                        );
+                    if(role(['permissions' => ['coins' => 'coins']]))
+                    {
+                        $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $current_user_id]);
+        
+                        if (!empty($recipient_coin_balance)) {
+                            // Update recipient's balance
+                            DB::connect()->update(
+                                "user_coins",
+                                ["coins_balance" => ((int)$recipient_coin_balance[0] + $coins_to_be_added)],
+                                ["user_id" => $current_user_id]
+                            );
+                        } else {
+                            // Insert recipient's balance record
+                            DB::connect()->insert(
+                                "user_coins",
+                                ["user_id" => $current_user_id, "coins_balance" => $coins_to_be_added]
+                            );
+                        }
                     }
                 }
 

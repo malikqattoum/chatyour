@@ -3,7 +3,7 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
     if (isset($data['removed_user_id'], $data['coins_to_remove']) && is_numeric($data['coins_to_remove'])) {
         $remover_user_id = (int)Registry::load('current_user')->id;
         $removed_user_id = $data['removed_user_id'];
-        $coins_to_remove = (int) $data['coins_to_remove'];
+        $coins_to_remove = (float) $data['coins_to_remove'];
     
         // Update recipient's balance
         $removed_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $removed_user_id]);
@@ -12,7 +12,7 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
             // Update recipient's balance
             DB::connect()->update(
                 "user_coins",
-                ["coins_balance" => ((int)$removed_coin_balance[0] - $coins_to_remove)],
+                ["coins_balance" => ((float)$removed_coin_balance[0] - $coins_to_remove)],
                 ["user_id" => $removed_user_id]
             );
         } else {

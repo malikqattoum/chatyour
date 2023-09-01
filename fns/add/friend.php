@@ -53,10 +53,13 @@ if (Registry::load('settings')->friend_system === 'enable') {
                             ]);
 
                             $friend_counter = DB::connect()->select("friends_counter", "temp_friends_count", ["user_id" => $current_user_id]);
-
+                            // echo json_encode($friend_counter);
                             if(!empty($friend_counter))
                             {
-                                if($friend_counter[0] == ((int)Registry::load('settings')->number_of_friends_for_coins - 1))
+                                if(role(['permissions' => ['coins' => 'coins']])
+                                && 
+                                $friend_counter[0] >= ((int)Registry::load('settings')->number_of_friends_for_coins - 1)
+                                )
                                 {
                                     DB::connect()->update(
                                         "friends_counter",
@@ -69,14 +72,14 @@ if (Registry::load('settings')->friend_system === 'enable') {
                                         // Update recipient's balance
                                         DB::connect()->update(
                                             "user_coins",
-                                            ["coins_balance" => ((int)$recipient_coin_balance[0] + (int)Registry::load('settings')->coins_amount_per_friends)],
+                                            ["coins_balance" => ((float)$recipient_coin_balance[0] + (float)Registry::load('settings')->coins_amount_per_friends)],
                                             ["user_id" => $current_user_id]
                                         );
                                     } else {
                                         // Insert recipient's balance record
                                         DB::connect()->insert(
                                             "user_coins",
-                                            ["user_id" => $current_user_id, "coins_balance" => (int)Registry::load('settings')->coins_amount_per_friends]
+                                            ["user_id" => $current_user_id, "coins_balance" => (float)Registry::load('settings')->coins_amount_per_friends]
                                         );
                                     }
                                 }

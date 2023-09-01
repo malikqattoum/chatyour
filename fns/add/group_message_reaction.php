@@ -82,21 +82,25 @@ if (role(['permissions' => ['groups' => 'react_messages']])) {
                             "reaction_id" => $reaction_id,
                             "updated_on" => Registry::load('current_user')->time_stamp,
                         ]);
-                        $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $user_id]);
-    
-                        if (!empty($recipient_coin_balance)) {
-                            // Update recipient's balance
-                            DB::connect()->update(
-                                "user_coins",
-                                ["coins_balance" => ((int)$recipient_coin_balance[0] + (int)Registry::load('settings')->coins_amount_per_msg_reaction)],
-                                ["user_id" => $user_id]
-                            );
-                        } else {
-                            // Insert recipient's balance record
-                            DB::connect()->insert(
-                                "user_coins",
-                                ["user_id" => $user_id, "coins_balance" => (int)Registry::load('settings')->coins_amount_per_msg_reaction]
-                            );
+                        
+                        if(role(['permissions' => ['coins' => 'coins']]))
+                        {
+                            $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $user_id]);
+        
+                            if (!empty($recipient_coin_balance)) {
+                                // Update recipient's balance
+                                DB::connect()->update(
+                                    "user_coins",
+                                    ["coins_balance" => ((int)$recipient_coin_balance[0] + (int)Registry::load('settings')->coins_amount_per_msg_reaction)],
+                                    ["user_id" => $user_id]
+                                );
+                            } else {
+                                // Insert recipient's balance record
+                                DB::connect()->insert(
+                                    "user_coins",
+                                    ["user_id" => $user_id, "coins_balance" => (int)Registry::load('settings')->coins_amount_per_msg_reaction]
+                                );
+                            }
                         }
                     } else if ($todo === 'update_reaction') {
                         DB::connect()->update("group_messages_reactions", [
