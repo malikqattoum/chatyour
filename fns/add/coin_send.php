@@ -5,6 +5,31 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
         $sender_user_id = (int)Registry::load('current_user')->id;
         $recipient_user_id = $data['recipient_user_id'];
         $coins_to_send = (float) $data['coins_to_send'];
+        
+        if (Registry::load('settings')->friend_system === 'enable' && !role(['permissions' => ['coins' => 'convert_coins_to_non_friends']])) {
+
+            $columns = $join = $where = null;
+            $columns = ['friendship_id', 'from_user_id', 'to_user_id', 'relation_status', 'updated_on'];
+
+            $where["OR"]["AND #first_query"] = [
+                "friends.from_user_id" => $recipient_user_id,
+                "friends.to_user_id" => $sender_user_id,
+            ];
+            $where["OR"]["AND #second_query"] = [
+                "friends.from_user_id" => $sender_user_id,
+                "friends.to_user_id" => $recipient_user_id,
+            ];
+
+            $where["LIMIT"] = 1;
+
+            $check_friend_list = DB::connect()->select('friends', $columns, $where);
+            if (empty($check_friend_list[0]['relation_status'])) {
+                $result['success'] = false;
+                $result['error_message'] = Registry::load('strings')->sen_coin_user_not_friend;
+                return;
+            } 
+
+        }
         if(role(['permissions' => ['groups' => 'super_privileges']]))
         {
             $minimum_value_to_send_coins = (float)Registry::load('settings')->minimum_conversion_value;
@@ -20,14 +45,14 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
         if($minimum_value_to_send_coins > $coins_to_send)
         {   
             $result['success'] = false;
-            $result['error_message'] = 'You can\' not send less than '.$minimum_value_to_send_coins.' coins';
+            $result['error_message'] = Registry::load('strings')->you_cant_send_less_than.' '.$minimum_value_to_send_coins.' '.Registry::load('strings')->coins;
             return;
         }
 
         if($maximum_value_to_send_coins < $coins_to_send)
         {
             $result['success'] = false;
-            $result['error_message'] = 'You can\' not send more than '.$maximum_value_to_send_coins.' coins';
+            $result['error_message'] = Registry::load('strings')->you_cant_send_more_than.' '.$maximum_value_to_send_coins.' '.Registry::load('strings')->coins;
             return;
         }
         $sender_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $sender_user_id]);
@@ -40,7 +65,7 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
                 if($available_balance_to_send_coins > $sender_balance[0])
                 {
                     $result['success'] = false;
-                    $result['error_message'] = 'You should have more than '.$available_balance_to_send_coins.' to send coins coins';
+                    $result['error_message'] = Registry::load('strings')->you_should_have_more_than.' '.$available_balance_to_send_coins.' '.Registry::load('strings')->to_send_coins;
                     return;
                 }
                 // Start a transaction
@@ -73,7 +98,7 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
                     "transaction_date" => date("Y-m-d H:i:s")
                 ]);
         
-                DB::connect()->insert("coin_actions_log", [
+                DB::connect()->insert("", [
                     "user_id" => $sender_user_id,
                     "target_user_id" => $recipient_user_id,
                     "action_type" => 'send', 
@@ -106,7 +131,7 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
     } else {
         // Send invalid input error
         $result['success'] = false;
-        $result['error_message'] = 'Invalid input';
+        $result['error_message'] = Registry::load('strings')->invalid_input;
     }
 }
 

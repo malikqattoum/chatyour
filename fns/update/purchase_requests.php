@@ -33,7 +33,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
                 // Update recipient's balance
                 DB::connect()->update(
                     "user_coins",
-                ["coins_balance" => ((int)$recipient_coin_balance[0] + (int)$data['coins'])],
+                    ["coins_balance" => ((float)$recipient_coin_balance[0] + (float)$data['coins'])],
                     ["user_id" => $data['user_id']]
                 );
             } else {
@@ -50,6 +50,23 @@ if (role(['permissions' => ['coins' => 'coins']])) {
                 "coins_amount" => $data['coins'],
                 "transaction_type" => 'purchase',
                 "transaction_date" => date("Y-m-d H:i:s")
+            ]);
+
+
+            DB::connect()->insert("coin_actions_log", [
+                "user_id" => (int)Registry::load('current_user')->id,
+                "target_user_id" => $data['user_id'],
+                "action_type" => 'purchase',
+                "coins_amount" => $data['coins'],
+                "action_date" => date("Y-m-d H:i:s")
+            ]);
+
+            DB::connect()->insert("site_notifications", [
+                "user_id" => $data['user_id'],
+                "notification_type" => 'coin_purchase_completed',
+                "related_user_id" => $data['user_id'],
+                "created_on" => Registry::load('current_user')->time_stamp,
+                "updated_on" => Registry::load('current_user')->time_stamp,
             ]);
         }
 

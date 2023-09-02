@@ -83,7 +83,7 @@ if (role(['permissions' => ['groups' => 'react_messages']])) {
                             "updated_on" => Registry::load('current_user')->time_stamp,
                         ]);
                         
-                        if(role(['permissions' => ['coins' => 'coins']]))
+                        if(role(['permissions' => ['coins' => 'coins']]) && Registry::load('settings')->coins_feature === 'enable')
                         {
                             $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $user_id]);
         
@@ -91,14 +91,14 @@ if (role(['permissions' => ['groups' => 'react_messages']])) {
                                 // Update recipient's balance
                                 DB::connect()->update(
                                     "user_coins",
-                                    ["coins_balance" => ((int)$recipient_coin_balance[0] + (int)Registry::load('settings')->coins_amount_per_msg_reaction)],
+                                    ["coins_balance" => ((float)$recipient_coin_balance[0] + (float)Registry::load('settings')->coins_amount_per_msg_reaction)],
                                     ["user_id" => $user_id]
                                 );
                             } else {
                                 // Insert recipient's balance record
                                 DB::connect()->insert(
                                     "user_coins",
-                                    ["user_id" => $user_id, "coins_balance" => (int)Registry::load('settings')->coins_amount_per_msg_reaction]
+                                    ["user_id" => $user_id, "coins_balance" => (float)Registry::load('settings')->coins_amount_per_msg_reaction]
                                 );
                             }
                         }

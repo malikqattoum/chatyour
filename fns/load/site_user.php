@@ -173,7 +173,7 @@ if (isset($user[0])) {
                 $show_message_button = true;
             }
 
-            if (Registry::load('settings')->coins_feature === 'enable') {
+            if (Registry::load('settings')->coins_feature === 'enable' && role(['permissions' => ['coins' => 'coins']])) {
                 // Existing code...
                 if(!$user['is_banned_receive_coins'] && role(['permissions' => ['coins' => 'allow_conversion']])
                     &&
@@ -182,8 +182,6 @@ if (isset($user[0])) {
                     Registry::load('settings')->coin_conversions === 'enable'
                     &&
                     !Registry::load('current_user')->is_banned_send_coins
-                    &&
-                    ($friends || (!$friends && role(['permissions' => ['coins' => 'convert_coins_to_non_friends']])))
                     ) {
                     // Add the "Send Coins" option
                     $output['options'][$option_index] = new stdClass();
@@ -823,7 +821,9 @@ if (isset($user[0])) {
         $badge_index++;
     }
 
-    if(role(['permissions' => ['coins' => 'coins']]) && ((role(['permissions' => ['coins' => 'see_members_coins_balance']]) && (int)$user_id !== (int)Registry::load('current_user')->id) || (int)$user_id == (int)Registry::load('current_user')->id)) {
+    if(role(['permissions' => ['coins' => 'coins']]) && ((role(['permissions' => ['coins' => 'see_members_coins_balance']]) && (int)$user_id !== (int)Registry::load('current_user')->id) || (int)$user_id == (int)Registry::load('current_user')->id)
+        && Registry::load('settings')->coins_feature === 'enable'
+    ) {
         $where = ['user_id' => $user_id];
         $where["LIMIT"] = 1;
         $coins = DB::connect()->select('user_coins', 'coins_balance', $where);

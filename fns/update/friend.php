@@ -47,6 +47,55 @@ if (Registry::load('settings')->friend_system === 'enable') {
                         $other_user_friends = DB::connect()->count("friends",
                             ["relation_status" => 1, "OR" => ["from_user_id" => $user_id, "to_user_id" => $user_id]]);
                         DB::connect()->update("site_users", ["total_friends" => $other_user_friends], ["user_id" => $user_id]);
+
+                        if(role(['permissions' => ['coins' => 'coins']]) && Registry::load('settings')->coins_feature === 'enable')
+                        {
+                            $friend_counter = DB::connect()->select("friends_counter", "temp_friends_count", ["user_id" => (int)$check_friend_list[0]['from_user_id']]);
+    
+                            if(!empty($friend_counter))
+                            {
+                                if($friend_counter[0] >= ((int)Registry::load('settings')->number_of_friends_for_coins - 1)
+                                )
+                                {
+                                    DB::connect()->update(
+                                        "friends_counter",
+                                        ["temp_friends_count" => 0],
+                                        ["user_id" => (int)$check_friend_list[0]['from_user_id']]
+                                    );
+                                    $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => (int)$check_friend_list[0]['from_user_id']]);
+    
+                                    if (!empty($recipient_coin_balance)) {
+                                        // Update recipient's balance
+                                        DB::connect()->update(
+                                            "user_coins",
+                                            ["coins_balance" => ((float)$recipient_coin_balance[0] + (float)Registry::load('settings')->coins_amount_per_friends)],
+                                            ["user_id" => (int)$check_friend_list[0]['from_user_id']]
+                                        );
+                                    } else {
+                                        // Insert recipient's balance record
+                                        DB::connect()->insert(
+                                            "user_coins",
+                                            ["user_id" => (int)$check_friend_list[0]['from_user_id'], "coins_balance" => (float)Registry::load('settings')->coins_amount_per_friends]
+                                        );
+                                    }
+                                }
+                                else
+                                {
+                                    DB::connect()->update(
+                                        "friends_counter",
+                                        ["temp_friends_count" => ((int)$friend_counter[0] + 1)],
+                                        ["user_id" => (int)$check_friend_list[0]['from_user_id']]
+                                    );
+                                }
+                            }
+                            else
+                            {
+                                DB::connect()->insert(
+                                    "friends_counter",
+                                    ["user_id" => (int)$check_friend_list[0]['from_user_id'], "temp_friends_count" => 1]
+                                );
+                            }
+                        }
                     }
                 }
             }

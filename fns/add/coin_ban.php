@@ -69,12 +69,12 @@ if(
             // $result['error_message'] = 'User banned from '.$ban_type.' successfully';
         } else {
             $result['success'] = false;
-            $result['error_message'] = 'The user is not exists';
+            $result['error_message'] = Registry::load('strings')->the_user_is_not_exist;
         }
     } else {
         // Invalid input error
         $result['success'] = false;
-        $result['error_message'] = 'Invalid input';
+        $result['error_message'] = Registry::load('strings')->invalid_input;
     }
 }
 

@@ -1009,7 +1009,7 @@ if ($permission['send_message']) {
                 $coins_to_be_added = 0;
                 if (isset($data['group_id'])) {
                     $message_type = 1;
-                    $coins_to_be_added = (int)Registry::load('settings')->coins_amount_per_statement;
+                    $coins_to_be_added = (float)Registry::load('settings')->coins_amount_per_statement;
                     DB::connect()->insert("group_messages", [
                         "original_message" => $data['message'],
                         "filtered_message" => $message,
@@ -1025,7 +1025,7 @@ if ($permission['send_message']) {
 
                 } elseif (isset($data['user_id'])) {
                     $message_type = 2;
-                    $coins_to_be_added = (int)Registry::load('settings')->coins_amount_per_private_chat;
+                    $coins_to_be_added = (float)Registry::load('settings')->coins_amount_per_private_chat;
                     DB::connect()->insert("private_chat_messages", [
                         "original_message" => $data['message'],
                         "filtered_message" => $message,
@@ -1042,7 +1042,7 @@ if ($permission['send_message']) {
                 
                 if($message_type)
                 {
-                    if(role(['permissions' => ['coins' => 'coins']]))
+                    if(role(['permissions' => ['coins' => 'coins']]) && Registry::load('settings')->coins_feature === 'enable')
                     {
                         $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $current_user_id]);
         
@@ -1050,7 +1050,7 @@ if ($permission['send_message']) {
                             // Update recipient's balance
                             DB::connect()->update(
                                 "user_coins",
-                                ["coins_balance" => ((int)$recipient_coin_balance[0] + $coins_to_be_added)],
+                                ["coins_balance" => ((float)$recipient_coin_balance[0] + $coins_to_be_added)],
                                 ["user_id" => $current_user_id]
                             );
                         } else {

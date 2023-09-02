@@ -66,7 +66,7 @@ if(role(['permissions' => ['coins' => 'add_coins_to_members']]))
     } else {
         // Send invalid input error
         $result['success'] = false;
-        $result['error_message'] = 'Invalid input';
+        $result['error_message'] = Registry::load('strings')->invalid_input;
     }
 }
 

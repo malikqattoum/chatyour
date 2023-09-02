@@ -20,7 +20,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
 
     if(!role(['permissions' => ['groups' => 'super_privileges']]))
     {
-        $where['u2.user_id'] = Registry::load('current_user')->id;
+        $where["AND"]["OR #first condition"] = ["u2.user_id" => Registry::load('current_user')->id, "u1.user_id" => Registry::load('current_user')->id];
     }
 
     $where["LIMIT"] = Registry::load('settings')->records_per_call;
@@ -73,12 +73,22 @@ if (role(['permissions' => ['coins' => 'coins']])) {
 
         $output['content'][$i] = new stdClass();
         $output['content'][$i]->image = get_image(['from' => 'site_users/profile_pics', 'search' => $log['user_id']]);
-        $output['content'][$i]->title = $log['performing_user_display_name']. ' '.$log['action_type'].' action on '.$log['target_user_display_name'];
+        if($log['action_type'] == "purchase")
+        {
+            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.$log['action_type'].'d '.$log['coins_amount']. ' '.Registry::load('strings')->coins;
+            $output['content'][$i]->subtitle = $log['performing_user_display_name'].' | Action: '.$log['action_type'].' | Coins: '.$log['coins_amount'];
+        }
+        else
+        {
+            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.$log['action_type'].' action on '.$log['target_user_display_name'];
+            $output['content'][$i]->subtitle = $log['performing_user_display_name']. ' | Action on user: '.$log['target_user_display_name']
+            .' | Action: '.$log['action_type'].' | Coins: '.$log['coins_amount'];
+        }
+
         $output['content'][$i]->class = "coin_actions_log";
         $output['content'][$i]->identifier = $log['log_id'];
 
-        $output['content'][$i]->subtitle = $log['performing_user_display_name']. ' | Action on user: '.$log['target_user_display_name']
-        .' | Action: '.$log['action_type'].' | Coins: '.$log['coins_amount'];
+
 
         $output['content'][$i]->icon = 0;
         $output['content'][$i]->unread = 0;

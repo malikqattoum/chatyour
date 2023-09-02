@@ -17,7 +17,7 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
             );
         } else {
             $result['success'] = false;
-            $result['error_message'] = 'There is no available coins to remove';
+            $result['error_message'] = Registry::load('strings')->no_available_coins_to_remove;
     
             return;
         }
@@ -63,7 +63,7 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
     } else {
         // Send invalid input error
         $result['success'] = false;
-        $result['error_message'] = 'Invalid input';
+        $result['error_message'] = Registry::load('strings')->invalid_input;
     }
 }
 
