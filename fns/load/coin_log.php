@@ -69,20 +69,21 @@ if (role(['permissions' => ['coins' => 'coins']])) {
     $output['sortby'][3]->attributes['sort'] = 'name_desc';
 
     foreach ($coin_actions_log as $log) {
+        $log['action_type'] = preg_replace('/\s+/', '_', $log['action_type']);
         $output['loaded']->offset[] = $log['log_id'];
 
         $output['content'][$i] = new stdClass();
         $output['content'][$i]->image = get_image(['from' => 'site_users/profile_pics', 'search' => $log['user_id']]);
         if($log['action_type'] == "purchase")
         {
-            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.$log['action_type'].'d '.$log['coins_amount']. ' '.Registry::load('strings')->coins;
-            $output['content'][$i]->subtitle = $log['performing_user_display_name'].' | Action: '.$log['action_type'].' | Coins: '.$log['coins_amount'];
+            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.Registry::load('strings')->{$log['action_type']}.' '.Registry::load('strings')->coins.' '.$log['coins_amount']. ' '.Registry::load('strings')->coins;
+            $output['content'][$i]->subtitle = $log['performing_user_display_name'].' | '.Registry::load('strings')->action.': '.Registry::load('strings')->{$log['action_type']}.' | '.Registry::load('strings')->coins.': '.$log['coins_amount'];
         }
         else
         {
-            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.$log['action_type'].' action on '.$log['target_user_display_name'];
-            $output['content'][$i]->subtitle = $log['performing_user_display_name']. ' | Action on user: '.$log['target_user_display_name']
-            .' | Action: '.$log['action_type'].' | Coins: '.$log['coins_amount'];
+            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.Registry::load('strings')->{$log['action_type']}.' '.Registry::load('strings')->coins.' '.Registry::load('strings')->action_on.' '.$log['target_user_display_name'];
+            $output['content'][$i]->subtitle = $log['performing_user_display_name']. ' | '.Registry::load('strings')->action_on_user.': '.$log['target_user_display_name']
+            .' | '.Registry::load('strings')->action.': '.Registry::load('strings')->{$log['action_type']}.' | '.Registry::load('strings')->coins.': '.$log['coins_amount'];
         }
 
         $output['content'][$i]->class = "coin_actions_log";
