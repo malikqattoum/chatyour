@@ -18,7 +18,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
         $where["performing_user_display_name[~]"] = $data["search"];
     }
 
-    if(!role(['permissions' => ['groups' => 'super_privileges']]))
+    if(!role(['permissions' => ['super_privileges' => 'all_users_coin_logs']]))
     {
         $where["AND"]["OR #first condition"] = ["u2.user_id" => Registry::load('current_user')->id, "u1.user_id" => Registry::load('current_user')->id];
     }

@@ -158,4 +158,6 @@ INSERT INTO chatyour_toto.`gr_language_strings` (`string_constant`, `string_valu
 ('sen_coin_user_not_friend', 'The user that you are trying to send coins to is not your friend', 'one-line', 0, 0, 1),
 ('sen_coin_user_not_friend', 'الشخص الذي تقوم بارسال الكوينز له ليس من اصدقاء', 'one-line', 0, 0, 2),
 ('coin_purchase_completed', 'Your coin package purchase has completed', 'one-line', 0, 0, 1),
-('coin_purchase_completed', 'تمت عملية شراءك لباقة الكوينز', 'one-line', 0, 0, 2)
+('coin_purchase_completed', 'تمت عملية شراءك لباقة الكوينز', 'one-line', 0, 0, 2),
+('all_users_coin_logs', 'All Users Coin Logs', 'one-line', 0, 0, 1),
+('all_users_coin_logs', 'سجل الكوينز لجميع المستخدمين', 'one-line', 0, 0, 2)

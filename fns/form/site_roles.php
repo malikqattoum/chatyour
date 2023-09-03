@@ -562,6 +562,7 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "profanity_filter" => Registry::load('strings')->profanity_filter,
         "message_scheduler" => Registry::load('strings')->message_scheduler,
         "cron_jobs" => Registry::load('strings')->cron_jobs,
+        "all_users_coin_logs" => Registry::load('strings')->all_users_coin_logs,
     ];
 
     $form['fields']->coins = [

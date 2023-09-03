@@ -98,7 +98,7 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
                     "transaction_date" => date("Y-m-d H:i:s")
                 ]);
         
-                DB::connect()->insert("", [
+                DB::connect()->insert("coin_actions_log", [
                     "user_id" => $sender_user_id,
                     "target_user_id" => $recipient_user_id,
                     "action_type" => 'send', 
