@@ -5,6 +5,11 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
         $sender_user_id = (int)Registry::load('current_user')->id;
         $recipient_user_id = $data['recipient_user_id'];
         $coins_to_send = (float) $data['coins_to_send'];
+        $coins_commission = 0;
+        if(Registry::load('settings')->coins_commission > 0)
+        {
+            $coins_commission = ((float)Registry::load('settings')->coins_commission * 0.01) * $coins_to_send;
+        }
         
         if (Registry::load('settings')->friend_system === 'enable' && !role(['permissions' => ['coins' => 'convert_coins_to_non_friends']])) {
 
@@ -87,7 +92,7 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
                     );
                 }
                 // Update recipient's balance
-                DB::connect()->update("user_coins", ["coins_balance" => ((float)$sender_balance[0] - $coins_to_send)], ["user_id" => $sender_user_id]);
+                DB::connect()->update("user_coins", ["coins_balance" => ((float)$sender_balance[0] - $coins_to_send - $coins_commission)], ["user_id" => $sender_user_id]);
         
                 // Record the transaction
                 DB::connect()->insert("coins", [

@@ -408,7 +408,7 @@ if ($force_request || role(['permissions' => ['site_users' => 'edit_users', 'pro
 
         if (!DB::connect()->error) {
             $update_data = ["updated_on" => Registry::load('current_user')->time_stamp];
-
+        
             if ($force_request || role(['permissions' => ['profile' => 'disable_private_messages']])) {
                 $disable_private_messages = 0;
 
@@ -417,8 +417,17 @@ if ($force_request || role(['permissions' => ['site_users' => 'edit_users', 'pro
                 }
 
                 $update_data["disable_private_messages"] = $disable_private_messages;
-            }
 
+                $disable_private_messages_for_non_friends = 0;
+
+                if (isset($data['disable_private_messages_for_non_friends']) && $data['disable_private_messages_for_non_friends'] === 'yes') {
+                    $disable_private_messages_for_non_friends = 1;
+                }
+
+                $update_data["disable_private_messages_for_non_friends"] = $disable_private_messages_for_non_friends;
+
+            }
+            
             if ($force_request || role(['permissions' => ['profile' => 'deactivate_account']])) {
                 if (isset($data['deactivate']) && $data['deactivate'] === 'yes') {
                     if ((int)$user_id === (int)Registry::load('current_user')->id) {
@@ -449,7 +458,7 @@ if ($force_request || role(['permissions' => ['site_users' => 'edit_users', 'pro
             if (empty($data['notification_tone']) || in_array($data['notification_tone'], $check_array)) {
                 $update_data["notification_tone"] = $data['notification_tone'];
             }
-
+            
             DB::connect()->update("site_users_settings", $update_data, ["user_id" => $user_id]);
 
 

@@ -85,7 +85,8 @@ if (role(['permissions' => ['private_conversations' => 'view_private_chats']])) 
                 $columns = [
                     'site_users.display_name', 'blacklist.block(blocked)',
                     'site_users_settings.deactivated', 'site_users_settings.disable_private_messages',
-                    'site_users.username', 'site_users.site_role_id'
+                    'site_users.username', 'site_users.site_role_id',
+                    'site_users_settings.disable_private_messages_for_non_friends'
                 ];
 
                 $join["[>]site_users_settings"] = ["site_users.user_id" => "user_id"];
@@ -176,6 +177,33 @@ if (role(['permissions' => ['private_conversations' => 'view_private_chats']])) 
                 //     $disable_private_chat = true;
                 // }
 
+                if (Registry::load('settings')->friend_system === 'enable') {
+                    $columns = $join = $where = null;
+                    $columns = ['friendship_id', 'from_user_id', 'to_user_id', 'relation_status'];
+
+                    $where["OR"]["AND #first_query"] = [
+                        "friends.from_user_id" => $data["user_id"],
+                        "friends.to_user_id" => $current_user_id,
+                        "friends.relation_status" => 1
+                    ];
+                    $where["OR"]["AND #second_query"] = [
+                        "friends.from_user_id" => $current_user_id,
+                        "friends.to_user_id" => $data["user_id"],
+                        "friends.relation_status" => 1
+                    ];
+
+                    $where["LIMIT"] = 1;
+
+                    $check_friend_list = DB::connect()->select('friends', $columns, $where);
+
+                    if((isset($user_info[0]['disable_private_messages_for_non_friends']) && !empty($user_info[0]['disable_private_messages_for_non_friends']) && !$super_privileges)
+                        && 
+                        !isset($check_friend_list[0]))
+                    {
+                        $disable_private_chat = true;
+                    }
+                }
+
                 if ($disable_private_chat) {
 
                     $output['loaded']->blocked = true;
@@ -188,25 +216,7 @@ if (role(['permissions' => ['private_conversations' => 'view_private_chats']])) 
 
                         if (!isset($private_conversation[0]['private_conversation_id'])) {
                             if (Registry::load('settings')->friend_system === 'enable') {
-
                                 if (!role(['permissions' => ['private_conversations' => 'message_non_friends']])) {
-                                    $columns = $join = $where = null;
-                                    $columns = ['friendship_id', 'from_user_id', 'to_user_id', 'relation_status'];
-
-                                    $where["OR"]["AND #first_query"] = [
-                                        "friends.from_user_id" => $data["user_id"],
-                                        "friends.to_user_id" => $current_user_id,
-                                        "friends.relation_status" => 1
-                                    ];
-                                    $where["OR"]["AND #second_query"] = [
-                                        "friends.from_user_id" => $current_user_id,
-                                        "friends.to_user_id" => $data["user_id"],
-                                        "friends.relation_status" => 1
-                                    ];
-
-                                    $where["LIMIT"] = 1;
-
-                                    $check_friend_list = DB::connect()->select('friends', $columns, $where);
 
                                     if (!isset($check_friend_list[0])) {
                                         $output['loaded']->messaging = false;

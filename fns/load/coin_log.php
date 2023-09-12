@@ -68,6 +68,15 @@ if (role(['permissions' => ['coins' => 'coins']])) {
     $output['sortby'][3]->attributes['load'] = 'coin_log';
     $output['sortby'][3]->attributes['sort'] = 'name_desc';
 
+    $output['multiple_select'] = new stdClass();
+    $output['multiple_select']->title = Registry::load('strings')->delete;
+    $output['multiple_select']->attributes['class'] = 'ask_confirmation';
+    $output['multiple_select']->attributes['data-remove'] = 'coin_log';
+    $output['multiple_select']->attributes['multi_select'] = 'log_id';
+    $output['multiple_select']->attributes['submit_button'] = Registry::load('strings')->yes;
+    $output['multiple_select']->attributes['cancel_button'] = Registry::load('strings')->no;
+    $output['multiple_select']->attributes['confirmation'] = Registry::load('strings')->confirm_action;
+
     foreach ($coin_actions_log as $log) {
         $log['action_type'] = preg_replace('/\s+/', '_', $log['action_type']);
         $output['loaded']->offset[] = $log['log_id'];
@@ -76,14 +85,20 @@ if (role(['permissions' => ['coins' => 'coins']])) {
         $output['content'][$i]->image = get_image(['from' => 'site_users/profile_pics', 'search' => $log['user_id']]);
         if($log['action_type'] == "purchase")
         {
-            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.Registry::load('strings')->{$log['action_type']}.' '.Registry::load('strings')->coins.' '.$log['coins_amount']. ' '.Registry::load('strings')->coins;
-            $output['content'][$i]->subtitle = $log['performing_user_display_name'].' | '.Registry::load('strings')->action.': '.Registry::load('strings')->{$log['action_type']}.' | '.Registry::load('strings')->coins.': '.$log['coins_amount'];
+            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.Registry::load('strings')->{$log['action_type']}.' '
+            .Registry::load('strings')->coins.' '.$log['coins_amount']. ' '.Registry::load('strings')->coins;
+            $output['content'][$i]->subtitle = $log['performing_user_display_name'].' | '.Registry::load('strings')->action.': '
+            .Registry::load('strings')->{$log['action_type']}.' | '.Registry::load('strings')->coins.': '.$log['coins_amount']
+            .' | Action Date: '.$log['action_date'];
         }
         else
         {
-            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.Registry::load('strings')->{$log['action_type']}.' '.Registry::load('strings')->coins.' '.Registry::load('strings')->action_on.' '.$log['target_user_display_name'];
-            $output['content'][$i]->subtitle = $log['performing_user_display_name']. ' | '.Registry::load('strings')->action_on_user.': '.$log['target_user_display_name']
-            .' | '.Registry::load('strings')->action.': '.Registry::load('strings')->{$log['action_type']}.' | '.Registry::load('strings')->coins.': '.$log['coins_amount'];
+            $output['content'][$i]->title = $log['performing_user_display_name']. ' '.Registry::load('strings')->{$log['action_type']}
+            .' '.Registry::load('strings')->coins.' '.Registry::load('strings')->action_on.' '.$log['target_user_display_name'];
+            $output['content'][$i]->subtitle = $log['performing_user_display_name']. ' | '
+            .Registry::load('strings')->action_on_user.': '.$log['target_user_display_name']
+            .' | '.Registry::load('strings')->action.': '.Registry::load('strings')->{$log['action_type']}.' | '
+            .Registry::load('strings')->coins.': '.$log['coins_amount'].' | Action Date: '.$log['action_date'];
         }
 
         $output['content'][$i]->class = "coin_actions_log";

@@ -1,0 +1,2 @@
+ALTER TABLE gr_site_users_settings
+ADD COLUMN disable_private_messages_for_non_friends int DEFAULT 0;

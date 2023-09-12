@@ -46,5 +46,16 @@ if(role(['permissions' => ['coins' => 'allow_conversion']])) {
         "class" => 'field', "placeholder" => Registry::load('strings')->coins,
     ];
 
+    if(Registry::load('settings')->coins_commission > 0)
+    {
+        $commissionMessage = Registry::load('strings')->coins_commission_deduct
+        .' '.Registry::load('settings')->coins_commission
+        .' '.Registry::load('strings')->coins_site_commission;
+        
+        $form['fields']->commission_hint = [
+            "title" => $commissionMessage, "tag" => 'small', 
+        ];
+    }
+
 }
 ?>

@@ -284,6 +284,13 @@ if (role(['permissions' => ['site_users' => ['create_user', 'edit_users'], 'prof
         $form['fields']->disable_private_messages['options'] = [
             "yes" => Registry::load('strings')->yes, "no" => Registry::load('strings')->no,
         ];
+
+        $form['fields']->disable_private_messages_for_non_friends = [
+            "title" => Registry::load('strings')->disable_private_messages_for_non_friends, "tag" => 'select', "class" => 'field'
+        ];
+        $form['fields']->disable_private_messages_for_non_friends['options'] = [
+            "yes" => Registry::load('strings')->yes, "no" => Registry::load('strings')->no,
+        ];
     }
 
 
@@ -310,12 +317,14 @@ if (role(['permissions' => ['site_users' => ['create_user', 'edit_users'], 'prof
 
     if (!empty($user_id)) {
         $disable_private_messages = 'no';
+        $disable_private_messages_for_non_friends = 'no';
         $columns = $where = $join = null;
 
         $columns = [
             'site_users.display_name', 'site_users.username', 'site_users.email_address', 'site_users.site_role_id',
             'site_users_settings.time_zone', 'site_users_settings.notification_tone', 'site_users_settings.disable_private_messages',
-            'site_users.unverified_email_address', 'site_users.phone_number', 'site_users.phone_verified'
+            'site_users.unverified_email_address', 'site_users.phone_number', 'site_users.phone_verified',
+            'site_users_settings.disable_private_messages_for_non_friends'
         ];
 
         $join["[>]site_users_settings"] = ["site_users.user_id" => "user_id"];
@@ -333,6 +342,10 @@ if (role(['permissions' => ['site_users' => ['create_user', 'edit_users'], 'prof
             $disable_private_messages = 'yes';
         }
 
+        if ((int)$user['disable_private_messages_for_non_friends'] === 1) {
+            $disable_private_messages_for_non_friends = 'yes';
+        }
+
         if (isset($user['time_zone']) && $user['time_zone'] === 'default') {
             $user['time_zone'] = 'Default';
         }
@@ -348,6 +361,7 @@ if (role(['permissions' => ['site_users' => ['create_user', 'edit_users'], 'prof
         $form['fields']->timezone['value'] = $user['time_zone'];
         $form['fields']->notification_tone['value'] = $user['notification_tone'];
         $form['fields']->disable_private_messages['value'] = $disable_private_messages;
+        $form['fields']->disable_private_messages_for_non_friends['value'] = $disable_private_messages_for_non_friends;
 
         $form['fields']->password["title"] = Registry::load('strings')->new_password;
 

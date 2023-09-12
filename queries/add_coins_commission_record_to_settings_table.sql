@@ -1,0 +1,2 @@
+INSERT INTO `gr_settings` (`setting`, `options`, `value`, `required`, `category`, `field_attributes`, `settings_order`, `updated_on`) VALUES
+('coins_commission', 'number', 0, 0, 'coins', '', 12, '2023-09-12 15:26:42')
