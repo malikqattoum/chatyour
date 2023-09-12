@@ -1,0 +1,2 @@
+update gr_settings set options = null 
+where setting in ('coins_amount_per_private_chat', 'coins_amount_per_friends', 'coins_amount_per_msg_reaction', 'coins_amount_per_statement', 'minimum_conversion_value', 'maximum_conversion_value')

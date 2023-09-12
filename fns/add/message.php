@@ -1005,7 +1005,11 @@ if ($permission['send_message']) {
                     $data['message'] = '';
                 }
 
+                $message_type = 0;
+                $coins_to_be_added = 0;
                 if (isset($data['group_id'])) {
+                    $message_type = 1;
+                    $coins_to_be_added = (float)Registry::load('settings')->coins_amount_per_statement;
                     DB::connect()->insert("group_messages", [
                         "original_message" => $data['message'],
                         "filtered_message" => $message,
@@ -1018,7 +1022,10 @@ if ($permission['send_message']) {
                         "created_on" => Registry::load('current_user')->time_stamp,
                         "updated_on" => Registry::load('current_user')->time_stamp,
                     ]);
+
                 } elseif (isset($data['user_id'])) {
+                    $message_type = 2;
+                    $coins_to_be_added = (float)Registry::load('settings')->coins_amount_per_private_chat;
                     DB::connect()->insert("private_chat_messages", [
                         "original_message" => $data['message'],
                         "filtered_message" => $message,
@@ -1031,6 +1038,29 @@ if ($permission['send_message']) {
                         "created_on" => Registry::load('current_user')->time_stamp,
                         "updated_on" => Registry::load('current_user')->time_stamp,
                     ]);
+                }
+                
+                if($message_type)
+                {
+                    if(role(['permissions' => ['coins' => 'coins']]) && Registry::load('settings')->coins_feature === 'enable')
+                    {
+                        $recipient_coin_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $current_user_id]);
+        
+                        if (!empty($recipient_coin_balance)) {
+                            // Update recipient's balance
+                            DB::connect()->update(
+                                "user_coins",
+                                ["coins_balance" => ((float)$recipient_coin_balance[0] + $coins_to_be_added)],
+                                ["user_id" => $current_user_id]
+                            );
+                        } else {
+                            // Insert recipient's balance record
+                            DB::connect()->insert(
+                                "user_coins",
+                                ["user_id" => $current_user_id, "coins_balance" => $coins_to_be_added]
+                            );
+                        }
+                    }
                 }
 
                 if ((int)$loop_count === 1) {

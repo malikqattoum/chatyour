@@ -90,6 +90,7 @@ if (role(['permissions' => ['super_privileges' => 'cron_jobs']])) {
         "delete_private_messages" => "delete_private_messages_parameters",
         "delete_site_users" => "delete_site_users_parameters",
         "delete_user_files" => "delete_user_files_parameters",
+        'delete_coin_actions_log' => "delete_coin_actions_log_parameters",
     ];
 
     $form['fields']->cron_job['options'] = [
@@ -97,6 +98,7 @@ if (role(['permissions' => ['super_privileges' => 'cron_jobs']])) {
         "delete_private_messages" => Registry::load('strings')->delete_private_messages,
         "delete_site_users" => Registry::load('strings')->delete_site_users,
         "delete_user_files" => Registry::load('strings')->delete_user_files,
+        "delete_coin_actions_log" => Registry::load('strings')->delete_coin_actions_log,
     ];
 
 
@@ -135,12 +137,12 @@ if (role(['permissions' => ['super_privileges' => 'cron_jobs']])) {
 
     $form['fields']->delete_older_than = [
         "title" => Registry::load('strings')->delete_older_than, "tag" => 'input', "type" => "number",
-        "class" => 'field cron_job_parameters common_field', "value" => 60
+        "class" => 'field cron_job_parameters delete_user_files_parameters delete_site_users_parameters delete_private_messages_parameters delete_group_messages_parameters', "value" => 60
     ];
 
     $form['fields']->entries_per_call = [
         "title" => Registry::load('strings')->entries_per_call, "tag" => 'input', "type" => "number",
-        "class" => 'field cron_job_parameters common_field', "value" => 25
+        "class" => 'field cron_job_parameters delete_user_files_parameters delete_site_users_parameters delete_private_messages_parameters delete_group_messages_parameters', "value" => 25
     ];
 
     if (isset($load["cron_job_id"])) {

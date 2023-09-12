@@ -562,8 +562,50 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "profanity_filter" => Registry::load('strings')->profanity_filter,
         "message_scheduler" => Registry::load('strings')->message_scheduler,
         "cron_jobs" => Registry::load('strings')->cron_jobs,
+        "all_users_coin_logs" => Registry::load('strings')->all_users_coin_logs,
     ];
 
+    $form['fields']->coins = [
+        "title" => Registry::load('strings')->coins, "tag" => 'checkbox', "class" => 'field'
+    ];
+
+    $form['fields']->coins['options'] = [
+        "coins" => Registry::load('strings')->coins,
+        "purchase_coin_packages" => Registry::load('strings')->purchase_coin_packages,
+        "allow_conversion" => Registry::load('strings')->allow_conversion,
+        // "adding_coins_and_control_it" => Registry::load('strings')->adding_coins_and_control_it,
+        "receive_conversions" => Registry::load('strings')->receive_conversions,
+        "add_coins_to_members" => Registry::load('strings')->add_coins_to_members,
+        "convert_coins_to_non_friends" => Registry::load('strings')->convert_coins_to_non_friends,
+        "see_members_coins_balance" => Registry::load('strings')->see_members_coins_balance,
+        "deduct_coins_from_members" => Registry::load('strings')->deduct_coins_from_members,
+        "can_deduct_from_who_can_deduct_coins" => Registry::load('strings')->can_deduct_from_who_can_deduct_coins,
+        "ban_member_from_sending_coins" => Registry::load('strings')->ban_member_from_sending_coins,
+        "ban_member_from_receiving_coins" => Registry::load('strings')->ban_member_from_receiving_coins,
+        "coins_log" => Registry::load('strings')->coins_log,
+        "purchase_requests" => Registry::load('strings')->purchase_requests,
+        "richest_of_coins" => Registry::load('strings')->richest_of_coins,
+        "view_coin_packages" => Registry::load('strings')->view_coin_packages,
+        "create_coin_packages" => Registry::load('strings')->create_coin_packages,
+        "edit_coin_packages" => Registry::load('strings')->edit_coin_packages,
+        "delete_coin_packages" => Registry::load('strings')->delete_coin_packages,
+        
+    ];
+
+    $form['fields']->minimum_value_to_convert_coins = [
+        "title" => Registry::load('strings')->minimum_value_to_convert_coins, "tag" => 'input', "type" => 'number', 'step'=>'any',
+        "class" => 'field'
+    ];
+
+    $form['fields']->maximum_value_to_convert_coins = [
+        "title" => Registry::load('strings')->maximum_value_to_convert_coins, "tag" => 'input', "type" => 'number', 'step' => '.01',
+        "class" => 'field'
+    ];
+
+    $form['fields']->available_balance_to_convert_coins = [
+        "title" => Registry::load('strings')->available_balance_to_convert_coins, "tag" => 'input', "type" => 'number', 'step' => '.01',
+        "class" => 'field'
+    ];
 
     if (isset($load["site_role_id"])) {
 

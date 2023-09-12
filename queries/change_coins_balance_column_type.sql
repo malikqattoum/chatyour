@@ -1,0 +1,1 @@
+ALTER TABLE gr_user_coins MODIFY COLUMN coins_balance decimal(8,2);
