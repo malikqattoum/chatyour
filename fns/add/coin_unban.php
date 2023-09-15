@@ -59,6 +59,16 @@ if(
                 "target_user_id" => $user_id,
                 "action_type" => 'unban '.$unban_type, 
                 "coins_amount" => 0,
+                "deleted_by" => '[]',
+                "action_date" => date("Y-m-d H:i:s")
+            ]);
+
+            DB::connect()->insert("admin_coin_actions_log", [
+                "user_id" => $unban_by_user_id,
+                "target_user_id" => $user_id,
+                "action_type" => 'unban '.$unban_type, 
+                "coins_amount" => 0,
+                "deleted_by" => '[]',
                 "action_date" => date("Y-m-d H:i:s")
             ]);
     

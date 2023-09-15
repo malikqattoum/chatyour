@@ -11,8 +11,6 @@ if (role(['permissions' => ['site_roles' => 'view']])) {
         'site_roles.site_role_attribute', 'site_roles.disabled'
     ];
 
-
-
     if ($data["sortby"] === 'users_asc' || $data["sortby"] === 'users_desc') {
         $columns['total_users'] = Medoo::raw('COUNT(<total_users.user_id>)');
         $join["[>]site_users(total_users)"] = ["site_roles.site_role_id" => "site_role_id"];

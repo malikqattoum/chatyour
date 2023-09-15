@@ -43,6 +43,16 @@ if(role(['permissions' => ['coins' => 'deduct_coins_from_members']])) {
             "target_user_id" => $removed_user_id,
             "action_type" => 'remove', 
             "coins_amount" => $coins_to_remove,
+            "deleted_by" => '[]',
+            "action_date" => date("Y-m-d H:i:s")
+        ]);
+
+        DB::connect()->insert("admin_coin_actions_log", [
+            "user_id" => $remover_user_id,
+            "target_user_id" => $removed_user_id,
+            "action_type" => 'remove', 
+            "coins_amount" => $coins_to_remove,
+            "deleted_by" => '[]',
             "action_date" => date("Y-m-d H:i:s")
         ]);
 

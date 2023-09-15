@@ -45,6 +45,16 @@ if(role(['permissions' => ['coins' => 'add_coins_to_members']]))
             "target_user_id" => $recipient_user_id,
             "action_type" => 'grant', 
             "coins_amount" => $coins_to_grant,
+            "deleted_by" => '[]',
+            "action_date" => date("Y-m-d H:i:s")
+        ]);
+
+        DB::connect()->insert("admin_coin_actions_log", [
+            "user_id" => $sender_user_id,
+            "target_user_id" => $recipient_user_id,
+            "action_type" => 'grant', 
+            "coins_amount" => $coins_to_grant,
+            "deleted_by" => '[]',
             "action_date" => date("Y-m-d H:i:s")
         ]);
 

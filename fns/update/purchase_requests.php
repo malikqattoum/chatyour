@@ -58,6 +58,16 @@ if (role(['permissions' => ['coins' => 'coins']])) {
                 "target_user_id" => $data['user_id'],
                 "action_type" => 'purchase',
                 "coins_amount" => $data['coins'],
+                "deleted_by" => '[]',
+                "action_date" => date("Y-m-d H:i:s")
+            ]);
+
+            DB::connect()->insert("admin_coin_actions_log", [
+                "user_id" => (int)Registry::load('current_user')->id,
+                "target_user_id" => $data['user_id'],
+                "action_type" => 'purchase',
+                "coins_amount" => $data['coins'],
+                "deleted_by" => '[]',
                 "action_date" => date("Y-m-d H:i:s")
             ]);
 

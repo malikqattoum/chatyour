@@ -1,0 +1,1 @@
+INSERT INTO gr_admin_coin_actions_log SELECT * FROM gr_coin_actions_log;

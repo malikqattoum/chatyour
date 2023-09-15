@@ -59,6 +59,16 @@ if(
                 "target_user_id" => $user_id,
                 "action_type" => 'ban '.$ban_type, // 'send', 'receive', 'grant', 'remove', 'purchase', 'ban', 'unban'
                 "coins_amount" => 0,
+                "deleted_by" => '[]',
+                "action_date" => date("Y-m-d H:i:s")
+            ]);
+
+            DB::connect()->insert("admin_coin_actions_log", [
+                "user_id" => $ban_by_user_id,
+                "target_user_id" => $user_id,
+                "action_type" => 'ban '.$ban_type, // 'send', 'receive', 'grant', 'remove', 'purchase', 'ban', 'unban'
+                "coins_amount" => 0,
+                "deleted_by" => '[]',
                 "action_date" => date("Y-m-d H:i:s")
             ]);
     

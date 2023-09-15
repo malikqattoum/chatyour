@@ -1,0 +1,17 @@
+INSERT INTO `gr_language_strings` (`string_constant`, `string_value`, `string_type`, `skip_update`, `skip_cache`, `language_id`) VALUES 
+('protection_from_block_users', 'Protection from block users', 'one-line', 0, 0, 1),
+('protection_from_block_users', 'الحماية من حظر المستخدمين', 'one-line', 0, 0, 2),
+('protection_from_ignore_users', 'Protection from ignore users', 'one-line', 0, 0, 1),
+('protection_from_ignore_users', 'الحماية من تجاهل المستخدمين', 'one-line', 0, 0, 2),
+('protection_from_ban_users_from_site', 'Protection from ban users from site', 'one-line', 0, 0, 1),
+('protection_from_ban_users_from_site', 'الحماية من حظر المستخدمين من الموقع', 'one-line', 0, 0, 2),
+('protection_from_ban_ip_addresses', 'Protection from ban ip addresses', 'one-line', 0, 0, 1),
+('protection_from_ban_ip_addresses', 'الحماية من حظر عناوين الip', 'one-line', 0, 0, 2),
+('protection_from_remove_from_group', 'Protection from remove from group', 'one-line', 0, 0, 1),
+('protection_from_remove_from_group', 'الحماية من الازالة من المجموعه', 'one-line', 0, 0, 2),
+('protection_from_ban_from_group', 'Protection from ban from group', 'one-line', 0, 0, 1),
+('protection_from_ban_from_group', 'الحماية من الحظر من المجموعه', 'one-line', 0, 0, 2),
+('protection_from_temporary_ban', 'Protection from temporary ban', 'one-line', 0, 0, 1),
+('protection_from_temporary_ban', 'الحماية من الحظر المؤقت', 'one-line', 0, 0, 2),
+('protection', 'Protection', 'one-line', 0, 0, 1),
+('protection', 'الحماية', 'one-line', 0, 0, 2)

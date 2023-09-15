@@ -68,7 +68,8 @@ if (isset($data["group_id"])) {
                 $columns = [
                     'group_members.user_id', 'site_users.display_name', 'site_users.email_address',
                     'group_members.group_member_id', 'group_roles.string_constant(group_role)',
-                    'group_roles.group_role_attribute', 'group_members.banned_till', 'blacklist.ignore', 'blacklist.block'
+                    'group_roles.group_role_attribute', 'group_members.banned_till', 'blacklist.ignore', 'blacklist.block',
+                    'site_users.site_role_id'
                 ];
 
                 $join["[>]site_users"] = ["group_members.user_id" => "user_id"];
@@ -282,15 +283,18 @@ if (isset($data["group_id"])) {
                     if (role(['permissions' => ['site_users' => 'block_users']])) {
                         if ((int)$group_member['user_id'] !== (int)Registry::load('current_user')->id) {
                             if (!isset($group_member['block']) || empty($group_member['block'])) {
-                                $output['options'][$i][$option_index] = new stdClass();
-                                $output['options'][$i][$option_index]->option = Registry::load('strings')->block_user;
-                                $output['options'][$i][$option_index]->class = 'ask_confirmation';
-                                $output['options'][$i][$option_index]->attributes['data-update'] = 'site_user_blacklist';
-                                $output['options'][$i][$option_index]->attributes['data-block_user_id'] = $group_member['user_id'];
-                                $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->block_user_confirmation;
-                                $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
-                                $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
-                                $option_index++;
+                                if(!role(['permissions' => ['protection' => 'protection_from_block_users'], 'role_id'=>$group_member['site_role_id']]))
+                                {
+                                    $output['options'][$i][$option_index] = new stdClass();
+                                    $output['options'][$i][$option_index]->option = Registry::load('strings')->block_user;
+                                    $output['options'][$i][$option_index]->class = 'ask_confirmation';
+                                    $output['options'][$i][$option_index]->attributes['data-update'] = 'site_user_blacklist';
+                                    $output['options'][$i][$option_index]->attributes['data-block_user_id'] = $group_member['user_id'];
+                                    $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->block_user_confirmation;
+                                    $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                                    $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                                    $option_index++;
+                                }
                             } else {
                                 $output['options'][$i][$option_index] = new stdClass();
                                 $output['options'][$i][$option_index]->option = Registry::load('strings')->unblock_user;
@@ -308,15 +312,18 @@ if (isset($data["group_id"])) {
                     if (role(['permissions' => ['site_users' => 'ignore_users']])) {
                         if ((int)$group_member['user_id'] !== (int)Registry::load('current_user')->id) {
                             if (!isset($group_member['ignore']) || empty($group_member['ignore'])) {
-                                $output['options'][$i][$option_index] = new stdClass();
-                                $output['options'][$i][$option_index]->option = Registry::load('strings')->ignore_user;
-                                $output['options'][$i][$option_index]->class = 'ask_confirmation';
-                                $output['options'][$i][$option_index]->attributes['data-update'] = 'site_user_blacklist';
-                                $output['options'][$i][$option_index]->attributes['data-ignore_user_id'] = $group_member['user_id'];
-                                $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->ignore_user_confirmation;
-                                $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
-                                $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
-                                $option_index++;
+                                if(!role(['permissions' => ['protection' => 'protection_from_ignore_users'], 'role_id'=>$group_member['site_role_id']]))
+                                {
+                                    $output['options'][$i][$option_index] = new stdClass();
+                                    $output['options'][$i][$option_index]->option = Registry::load('strings')->ignore_user;
+                                    $output['options'][$i][$option_index]->class = 'ask_confirmation';
+                                    $output['options'][$i][$option_index]->attributes['data-update'] = 'site_user_blacklist';
+                                    $output['options'][$i][$option_index]->attributes['data-ignore_user_id'] = $group_member['user_id'];
+                                    $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->ignore_user_confirmation;
+                                    $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                                    $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                                    $option_index++;
+                                }
                             } else {
                                 $output['options'][$i][$option_index] = new stdClass();
                                 $output['options'][$i][$option_index]->option = Registry::load('strings')->unignore_user;
@@ -344,24 +351,29 @@ if (isset($data["group_id"])) {
                     if ((int)Registry::load('current_user')->id !== (int)$group_member['user_id']) {
                         if ($super_privileges || role(['permissions' => ['group_members' => 'ban_users_from_group'], 'group_role_id' => $group_info['group_role_id']])) {
                             if ($group_member['group_role_attribute'] !== 'banned_users') {
-                                $output['options'][$i][$option_index] = new stdClass();
-                                $output['options'][$i][$option_index]->option = Registry::load('strings')->temporary_ban_from_group;
-                                $output['options'][$i][$option_index]->class = 'load_form';
-                                $output['options'][$i][$option_index]->attributes['form'] = 'temporary_ban_from_group';
-                                $output['options'][$i][$option_index]->attributes['data-group_id'] = $group_id;
-                                $output['options'][$i][$option_index]->attributes['data-user_id'] = $group_member['user_id'];
-                                $option_index++;
+                                if(!role(['permissions' => ['protection' => 'protection_from_temporary_ban'], 'role_id'=>$group_member['site_role_id']]))
+                                {                                    
+                                    $output['options'][$i][$option_index] = new stdClass();
+                                    $output['options'][$i][$option_index]->option = Registry::load('strings')->temporary_ban_from_group;
+                                    $output['options'][$i][$option_index]->class = 'load_form';
+                                    $output['options'][$i][$option_index]->attributes['form'] = 'temporary_ban_from_group';
+                                    $output['options'][$i][$option_index]->attributes['data-group_id'] = $group_id;
+                                    $output['options'][$i][$option_index]->attributes['data-user_id'] = $group_member['user_id'];
+                                    $option_index++;
+                                }
 
-                                $output['options'][$i][$option_index] = new stdClass();
-                                $output['options'][$i][$option_index]->class = 'ask_confirmation';
-                                $output['options'][$i][$option_index]->option = Registry::load('strings')->ban_from_group;
-                                $output['options'][$i][$option_index]->attributes['data-update'] = 'group_user_role';
-                                $output['options'][$i][$option_index]->attributes['data-group_id'] = $group_id;
-                                $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
-                                $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
-                                $output['options'][$i][$option_index]->attributes['data-ban_user_id'] = $group_member['user_id'];
-                                $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->ban_from_group_confirmation;
-                                $option_index++;
+                                if(!role(['permissions' => ['protection' => 'protection_from_ban_from_group'], 'role_id' => $group_member['site_role_id']])) {
+                                    $output['options'][$i][$option_index] = new stdClass();
+                                    $output['options'][$i][$option_index]->class = 'ask_confirmation';
+                                    $output['options'][$i][$option_index]->option = Registry::load('strings')->ban_from_group;
+                                    $output['options'][$i][$option_index]->attributes['data-update'] = 'group_user_role';
+                                    $output['options'][$i][$option_index]->attributes['data-group_id'] = $group_id;
+                                    $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                                    $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                                    $output['options'][$i][$option_index]->attributes['data-ban_user_id'] = $group_member['user_id'];
+                                    $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->ban_from_group_confirmation;
+                                    $option_index++;
+                                }
                             }
                         }
                     }
@@ -382,16 +394,19 @@ if (isset($data["group_id"])) {
                     }
 
                     if ($super_privileges || role(['permissions' => ['group_members' => 'remove_group_members'], 'group_role_id' => $group_info['group_role_id']])) {
-                        $output['options'][$i][$option_index] = new stdClass();
-                        $output['options'][$i][$option_index]->option = Registry::load('strings')->remove_from_group;
-                        $output['options'][$i][$option_index]->class = 'ask_confirmation';
-                        $output['options'][$i][$option_index]->attributes['data-remove'] = 'group_members';
-                        $output['options'][$i][$option_index]->attributes['data-group_id'] = $group_id;
-                        $output['options'][$i][$option_index]->attributes['data-user_id'] = $group_member['user_id'];
-                        $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->remove_from_group_confirmation;
-                        $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
-                        $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
-                        $option_index++;
+                        if(!role(['permissions' => ['protection' => 'protection_from_remove_from_group'], 'role_id'=>$group_member['site_role_id']]))
+                        {
+                            $output['options'][$i][$option_index] = new stdClass();
+                            $output['options'][$i][$option_index]->option = Registry::load('strings')->remove_from_group;
+                            $output['options'][$i][$option_index]->class = 'ask_confirmation';
+                            $output['options'][$i][$option_index]->attributes['data-remove'] = 'group_members';
+                            $output['options'][$i][$option_index]->attributes['data-group_id'] = $group_id;
+                            $output['options'][$i][$option_index]->attributes['data-user_id'] = $group_member['user_id'];
+                            $output['options'][$i][$option_index]->attributes['confirmation'] = Registry::load('strings')->remove_from_group_confirmation;
+                            $output['options'][$i][$option_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                            $output['options'][$i][$option_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                            $option_index++;
+                        }
                     }
 
                     $i++;

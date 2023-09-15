@@ -592,6 +592,20 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         
     ];
 
+    $form['fields']->protection = [
+        "title" => Registry::load('strings')->protection, "tag" => 'checkbox', "class" => 'field'
+    ];
+
+    $form['fields']->protection['options'] = [
+        "protection_from_block_users" => Registry::load('strings')->protection_from_block_users,
+        "protection_from_ignore_users" => Registry::load('strings')->protection_from_ignore_users,
+        "protection_from_ban_users_from_site" => Registry::load('strings')->protection_from_ban_users_from_site,
+        "protection_from_ban_ip_addresses" => Registry::load('strings')->protection_from_ban_ip_addresses,
+        "protection_from_remove_from_group" => Registry::load('strings')->protection_from_remove_from_group,
+        "protection_from_ban_from_group" => Registry::load('strings')->protection_from_ban_from_group,
+        "protection_from_temporary_ban" => Registry::load('strings')->protection_from_temporary_ban,
+    ];
+
     $form['fields']->minimum_value_to_convert_coins = [
         "title" => Registry::load('strings')->minimum_value_to_convert_coins, "tag" => 'input', "type" => 'number', 'step'=>'any',
         "class" => 'field'

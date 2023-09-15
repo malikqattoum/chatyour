@@ -2,16 +2,31 @@
 
 if (role(['permissions' => ['coins' => 'coins']])) {
 
+    $current_user_id = Registry::load('current_user')->id;
+    if(!role(['permissions' => ['super_privileges' => 'all_users_coin_logs']]))
+    {
+        $tableName = 'coin_actions_log';
+        $where["AND"]["OR"] = [
+            $tableName.".deleted_by[!~]" => $current_user_id,
+            $tableName.".deleted_by" => NULL,
+        ];
+    }
+    else
+    {
+        $tableName = 'admin_coin_actions_log';
+    }
+
     $columns = [
-        'coin_actions_log.log_id', 'coin_actions_log.user_id', 'coin_actions_log.target_user_id',
-        'coin_actions_log.action_type', 'coin_actions_log.coins_amount', 'coin_actions_log.action_date',
+        $tableName.'.log_id', $tableName.'.user_id', $tableName.'.target_user_id',
+        $tableName.'.action_type', $tableName.'.coins_amount', $tableName.'.action_date',
+        $tableName.'.deleted_by',
         "u1.display_name(performing_user_display_name)",
         "u2.display_name(target_user_display_name)"
     ];
 
     if (!empty($data["offset"])) {
         $data["offset"] = array_map('intval', explode(',', $data["offset"]));
-        $where["coin_actions_log.log_id[!]"] = $data["offset"];
+        $where[$tableName.".log_id[!]"] = $data["offset"];
     }
 
     if (!empty($data["search"])) {
@@ -20,7 +35,7 @@ if (role(['permissions' => ['coins' => 'coins']])) {
 
     if(!role(['permissions' => ['super_privileges' => 'all_users_coin_logs']]))
     {
-        $where["AND"]["OR #first condition"] = ["u2.user_id" => Registry::load('current_user')->id, "u1.user_id" => Registry::load('current_user')->id];
+        $where["AND"]["OR #first condition"] = ["u2.user_id" => $current_user_id, "u1.user_id" => $current_user_id];
     }
 
     $where["LIMIT"] = Registry::load('settings')->records_per_call;
@@ -30,14 +45,13 @@ if (role(['permissions' => ['coins' => 'coins']])) {
     } else if ($data["sortby"] === 'name_desc') {
         $where["ORDER"] = ["performing_user_display_name" => "DESC"];
     } else {
-        $where["ORDER"] = ["coin_actions_log.log_id" => "DESC"];
+        $where["ORDER"] = [$tableName.".log_id" => "DESC"];
     }
 
-    $join["[>]site_users(u1)"] = ['coin_actions_log.user_id' => 'user_id'];
-    $join["[>]site_users(u2)"] = ['coin_actions_log.target_user_id' => 'user_id'];
+    $join["[>]site_users(u1)"] = [$tableName.'.user_id' => 'user_id'];
+    $join["[>]site_users(u2)"] = [$tableName.'.target_user_id' => 'user_id'];
 
-
-    $coin_actions_log = DB::connect()->select('coin_actions_log', $join, $columns, $where);
+    $coin_actions_log = DB::connect()->select($tableName, $join, $columns, $where);
 
     $i = 1;
     $output = array();

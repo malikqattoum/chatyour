@@ -1,4 +1,6 @@
 <?php
+use Medoo\Medoo;
+
 $result = array();
 $noerror = true;
 
@@ -23,11 +25,18 @@ if (role(['permissions' => ['coins' => 'coins']])) {
 
         if (role(['permissions' => ['super_privileges' => 'all_users_coin_logs']]))
         {
-            DB::connect()->delete("coin_actions_log", ["log_id" => $coin_log_ids]);
+            DB::connect()->delete("admin_coin_actions_log", ["log_id" => $coin_log_ids]);
         }
         else
         {
-            DB::connect()->delete("coin_actions_log", ["log_id" => $coin_log_ids, "target_user_id" => $user_id]);
+            $jsonColumn = 'deleted_by';
+            $newValue = $user_id;
+
+            DB::connect()->update('coin_actions_log', [
+                $jsonColumn => Medoo::raw("JSON_MERGE($jsonColumn, '$newValue')"),
+            ], [
+                'log_id' => $coin_log_ids,
+            ]);
         }
 
         if (!DB::connect()->error) {
