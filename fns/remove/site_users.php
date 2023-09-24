@@ -110,6 +110,14 @@ if ($force_request || role(['permissions' => ['site_users' => 'delete_users']]))
             }
         }
 
+        DB::connect()->delete("coin_grant", ["granted_user_id" => $user_ids]);
+
+        DB::connect()->delete("coin_remove", ["removed_user_id" => $user_ids]);
+
+        DB::connect()->delete("purchased_packages", ["user_id" => $user_ids]);
+
+        DB::connect()->delete("user_coins", ["user_id" => $user_ids]);
+
         DB::connect()->delete("site_users", ["user_id" => $user_ids]);
 
         if (!DB::connect()->error) {
