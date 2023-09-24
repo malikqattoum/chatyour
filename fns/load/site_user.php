@@ -63,6 +63,7 @@ $user = DB::connect()->select('site_users', $join, $columns, $where);
 if (isset($user[0])) {
     $user = $user[0];
     $option_index = 1;
+    $button_index = 1;
 
     if (!role(['permissions' => ['site_users' => 'edit_users']])) {
         if (isset($user['deactivated']) && !empty($user['deactivated'])) {
@@ -123,13 +124,15 @@ if (isset($user[0])) {
                     }
 
                     if ($send_friend_request) {
-                        $output['button'] = new stdClass();
-                        $output['button']->class = 'button';
-                        $output['button']->title = Registry::load('strings')->add_friend;
-                        $output['button']->attributes['class'] = 'api_request';
-                        $output['button']->attributes['data-add'] = 'friend';
-                        $output['button']->attributes['data-user_id'] = $user['user_id'];
-                        $output['button']->attributes['data-info_box'] = true;
+                        $output['button'][$button_index] = new stdClass();
+                        $output['button'][$button_index]->class = 'button';
+                        $output['button'][$button_index]->title = Registry::load('strings')->add_friend;
+                        $output['button'][$button_index]->attributes['class'] = 'api_request';
+                        $output['button'][$button_index]->attributes['data-add'] = 'friend';
+                        $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
+                        $output['button'][$button_index]->attributes['data-info_box'] = true;
+
+                        $button_index++;
 
                         if (role(['permissions' => ['private_conversations' => 'message_non_friends']])) {
                             $send_message_option = true;
@@ -144,21 +147,25 @@ if (isset($user[0])) {
                         $friends = true;
                     } else {
                         if ((int)$check_friend_list[0]['from_user_id'] === (int)$current_user_id) {
-                            $output['button'] = new stdClass();
-                            $output['button']->class = 'button';
-                            $output['button']->title = Registry::load('strings')->cancel_request;
-                            $output['button']->attributes['class'] = 'api_request';
-                            $output['button']->attributes['data-remove'] = 'friend';
-                            $output['button']->attributes['data-user_id'] = $user['user_id'];
-                            $output['button']->attributes['data-info_box'] = true;
+                            $output['button'][$button_index] = new stdClass();
+                            $output['button'][$button_index]->class = 'button';
+                            $output['button'][$button_index]->title = Registry::load('strings')->cancel_request;
+                            $output['button'][$button_index]->attributes['class'] = 'api_request';
+                            $output['button'][$button_index]->attributes['data-remove'] = 'friend';
+                            $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
+                            $output['button'][$button_index]->attributes['data-info_box'] = true;
+
+                            $button_index++;
                         } else {
-                            $output['button'] = new stdClass();
-                            $output['button']->class = 'button';
-                            $output['button']->title = Registry::load('strings')->accept_friend;
-                            $output['button']->attributes['class'] = 'api_request';
-                            $output['button']->attributes['data-update'] = 'friend';
-                            $output['button']->attributes['data-user_id'] = $user['user_id'];
-                            $output['button']->attributes['data-info_box'] = true;
+                            $output['button'][$button_index] = new stdClass();
+                            $output['button'][$button_index]->class = 'button';
+                            $output['button'][$button_index]->title = Registry::load('strings')->accept_friend;
+                            $output['button'][$button_index]->attributes['class'] = 'api_request';
+                            $output['button'][$button_index]->attributes['data-update'] = 'friend';
+                            $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
+                            $output['button'][$button_index]->attributes['data-info_box'] = true;
+
+                            $button_index++;
 
                             $pending_friend_request = true;
                         }
@@ -172,6 +179,66 @@ if (isset($user[0])) {
             } else {
                 $show_message_button = true;
             }
+
+            // Start follow
+
+            if (Registry::load('settings')->follow_system === 'enable') {
+
+                $columns = $join = $where = null;
+                $columns = ['follow_id', 'from_user_id', 'to_user_id', 'relation_status', 'updated_on'];
+
+                // $where["OR"]["AND #first_query"] = [
+                //     "followers.from_user_id" => $user_id,
+                //     "followers.to_user_id" => $current_user_id,
+                // ];
+                $where["OR"]["AND #second_query"] = [
+                    "followers.from_user_id" => $current_user_id,
+                    "followers.to_user_id" => $user_id,
+                ];
+
+                $where["LIMIT"] = 1;
+
+                $check_follow_list = DB::connect()->select('followers', $columns, $where);
+                // echo json_encode($check_follow_list);
+                if (!isset($check_follow_list[0])) {
+
+                    if (role(['permissions' => ['follow_system' => 'send_follow_requests']])) {
+                        $send_follow_request = true;
+                        if (!role(['permissions' => ['follow_system' => 'receive_follow_requests'], 'site_role_id' => $user['site_role_id']])) {
+                            $send_follow_request = false;
+                        }
+                    }
+
+                    if ($send_follow_request) {
+                        $output['button'][$button_index] = new stdClass();
+                        $output['button'][$button_index]->class = 'button';
+                        $output['button'][$button_index]->title = Registry::load('strings')->follow;
+                        $output['button'][$button_index]->attributes['class'] = 'api_request';
+                        $output['button'][$button_index]->attributes['data-add'] = 'follow';
+                        $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
+                        $output['button'][$button_index]->attributes['data-info_box'] = true;
+
+                        $button_index++;
+
+                    }
+                } elseif (!empty($check_follow_list[0]['relation_status'])) {
+                    $follower = true;
+
+                    if ((int)$check_follow_list[0]['from_user_id'] === (int)$current_user_id) {
+                        $output['button'][$button_index] = new stdClass();
+                        $output['button'][$button_index]->class = 'button';
+                        $output['button'][$button_index]->title = Registry::load('strings')->unfollow;
+                        $output['button'][$button_index]->attributes['class'] = 'api_request';
+                        $output['button'][$button_index]->attributes['data-remove'] = 'follow';
+                        $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
+                        $output['button'][$button_index]->attributes['data-info_box'] = true;
+
+                        $button_index++;
+                    }
+                }
+            }
+
+            // End follow
 
             if (Registry::load('settings')->coins_feature === 'enable' && role(['permissions' => ['coins' => 'coins']])) {
                 // Existing code...
@@ -279,12 +346,14 @@ if (isset($user[0])) {
             }
 
         } else if (role(['permissions' => ['profile' => 'edit_profile']])) {
-            $output['button'] = new stdClass();
-            $output['button']->class = 'button';
-            $output['button']->title = Registry::load('strings')->edit_profile;
-            $output['button']->attributes['class'] = 'load_form';
-            $output['button']->attributes['form'] = 'site_users';
-            $output['button']->attributes['data-user_id'] = $user['user_id'];
+            $output['button'][$button_index] = new stdClass();
+            $output['button'][$button_index]->class = 'button';
+            $output['button'][$button_index]->title = Registry::load('strings')->edit_profile;
+            $output['button'][$button_index]->attributes['class'] = 'load_form';
+            $output['button'][$button_index]->attributes['form'] = 'site_users';
+            $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
+
+            $button_index++;
         }
     }
 
@@ -298,11 +367,13 @@ if (isset($user[0])) {
 
     if ($show_message_button) {
         if (role(['permissions' => ['private_conversations' => 'send_message']])) {
-            $output['button'] = new stdClass();
-            $output['button']->class = 'button';
-            $output['button']->title = Registry::load('strings')->message;
-            $output['button']->attributes['class'] = 'load_conversation info_panel_message_button';
-            $output['button']->attributes['user_id'] = $user['user_id'];
+            $output['button'][$button_index] = new stdClass();
+            $output['button'][$button_index]->class = 'button';
+            $output['button'][$button_index]->title = Registry::load('strings')->message;
+            $output['button'][$button_index]->attributes['class'] = 'load_conversation info_panel_message_button';
+            $output['button'][$button_index]->attributes['user_id'] = $user['user_id'];
+
+            $button_index++;
         }
     }
 

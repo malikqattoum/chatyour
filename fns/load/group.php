@@ -59,49 +59,52 @@ if (!empty($group_id)) {
             $output['loaded']->subheading = $group['slug'];
         }
 
-
+        $button_index = 1;
         if (Registry::load('current_user')->logged_in) {
             if (role(['permissions' => ['groups' => 'join_group']])) {
                 if (!isset($group['group_role_id']) || empty($group['group_role_id'])) {
-                    $output['button'] = new stdClass();
-                    $output['button']->title = Registry::load('strings')->join_group;
+                    $output['button'][$button_index] = new stdClass();
+                    $output['button'][$button_index]->title = Registry::load('strings')->join_group;
 
                     if (empty($group['password']) || $super_privileges) {
 
                         if (isset(Registry::load('settings')->group_join_confirmation) && Registry::load('settings')->group_join_confirmation === 'enable') {
-                            $output['button']->attributes['class'] = 'ask_confirmation';
-                            $output['button']->attributes['data-add'] = 'group_members';
-                            $output['button']->attributes['data-group_id'] = $group['group_id'];
-                            $output['button']->attributes['confirmation'] = Registry::load('strings')->confirm_join;
-                            $output['button']->attributes['submit_button'] = Registry::load('strings')->yes;
-                            $output['button']->attributes['cancel_button'] = Registry::load('strings')->no;
-                            $output['button']->attributes['column'] = 'fourth';
+                            $output['button'][$button_index]->attributes['class'] = 'ask_confirmation';
+                            $output['button'][$button_index]->attributes['data-add'] = 'group_members';
+                            $output['button'][$button_index]->attributes['data-group_id'] = $group['group_id'];
+                            $output['button'][$button_index]->attributes['confirmation'] = Registry::load('strings')->confirm_join;
+                            $output['button'][$button_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                            $output['button'][$button_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                            $output['button'][$button_index]->attributes['column'] = 'fourth';
                         } else {
-                            $output['button']->attributes['class'] = 'api_request';
-                            $output['button']->attributes['data-add'] = 'group_members';
-                            $output['button']->attributes['data-group_id'] = $group['group_id'];
+                            $output['button'][$button_index]->attributes['class'] = 'api_request';
+                            $output['button'][$button_index]->attributes['data-add'] = 'group_members';
+                            $output['button'][$button_index]->attributes['data-group_id'] = $group['group_id'];
                         }
                     } else {
-                        $output['button']->attributes['class'] = 'load_form';
-                        $output['button']->attributes['form'] = 'join_group';
-                        $output['button']->attributes['data-group_id'] = $group['group_id'];
+                        $output['button'][$button_index]->attributes['class'] = 'load_form';
+                        $output['button'][$button_index]->attributes['form'] = 'join_group';
+                        $output['button'][$button_index]->attributes['data-group_id'] = $group['group_id'];
                     }
+                    $button_index++;
                 }
             }
 
             if (role(['permissions' => ['groups' => 'leave_group']])) {
                 if (isset($group['group_role_id']) && !empty($group['group_role_id'])) {
                     if ($super_privileges || role(['permissions' => ['groups' => 'leave_group']]) && empty($group['unleavable']) && $group['group_role_attribute'] !== 'banned_users') {
-                        $output['button'] = new stdClass();
-                        $output['button']->title = Registry::load('strings')->leave_group;
-                        $output['button']->attributes['class'] = 'ask_confirmation';
-                        $output['button']->attributes['data-remove'] = 'group_members';
-                        $output['button']->attributes['data-info_box'] = true;
-                        $output['button']->attributes['data-group_id'] = $group['group_id'];
-                        $output['button']->attributes['confirmation'] = Registry::load('strings')->confirm_leave;
-                        $output['button']->attributes['submit_button'] = Registry::load('strings')->yes;
-                        $output['button']->attributes['cancel_button'] = Registry::load('strings')->no;
-                        $output['button']->attributes['column'] = 'fourth';
+                        $output['button'][$button_index] = new stdClass();
+                        $output['button'][$button_index]->title = Registry::load('strings')->leave_group;
+                        $output['button'][$button_index]->attributes['class'] = 'ask_confirmation';
+                        $output['button'][$button_index]->attributes['data-remove'] = 'group_members';
+                        $output['button'][$button_index]->attributes['data-info_box'] = true;
+                        $output['button'][$button_index]->attributes['data-group_id'] = $group['group_id'];
+                        $output['button'][$button_index]->attributes['confirmation'] = Registry::load('strings')->confirm_leave;
+                        $output['button'][$button_index]->attributes['submit_button'] = Registry::load('strings')->yes;
+                        $output['button'][$button_index]->attributes['cancel_button'] = Registry::load('strings')->no;
+                        $output['button'][$button_index]->attributes['column'] = 'fourth';
+                        
+                        $button_index++;
                     }
                 }
             }

@@ -255,6 +255,16 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "receive_requests" => Registry::load('strings')->receive_requests,
     ];
 
+    $form['fields']->follow_system = [
+        "title" => Registry::load('strings')->follow_system, "tag" => 'checkbox', "class" => 'field'
+    ];
+
+    $form['fields']->follow_system['options'] = [
+        "view_followers" => Registry::load('strings')->view_followers,
+        "send_follow_requests" => Registry::load('strings')->send_follow_requests,
+        "receive_follow_requests" => Registry::load('strings')->receive_follow_requests,
+    ];
+
     $form['fields']->private_conversations = [
         "title" => Registry::load('strings')->private_conversations, "tag" => 'checkbox', "class" => 'field'
     ];
