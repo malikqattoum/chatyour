@@ -11,6 +11,7 @@ $output['error'] = new stdClass();
 $output['error']->title = Registry::load('strings')->not_found;
 $output['error']->message = Registry::load('strings')->account_not_found;
 $view_friends_list = false;
+$view_followers_list = false;
 
 if (isset($data['user_id'])) {
     $data['user_id'] = filter_var($data['user_id'], FILTER_SANITIZE_NUMBER_INT);
@@ -538,6 +539,7 @@ if (isset($user[0])) {
             $option_index++;
 
             $view_friends_list = true;
+            $view_followers_list = true;
         }
 
         if (role(['permissions' => ['site_users' => 'approve_users']])) {
@@ -735,6 +737,7 @@ if (isset($user[0])) {
         }
     } else {
         $view_friends_list = true;
+        $view_followers_list = true;
     }
 
     if (role(['permissions' => ['badges' => 'assign']])) {
@@ -989,10 +992,68 @@ if (isset($user[0])) {
     }
 
 
+    if ($view_followers_list) {
+        if (Registry::load('settings')->follow_system === 'enable') {
+            if (role(['permissions' => ['follow_system' => 'view_followers_names_in_the_profile']])) {
+                $followers_list = array();
+
+                $columns = $where = $join = null;
+                $columns = [
+                    'from_user.display_name(from_fullname)',
+                    'followers.from_user_id', 'followers.to_user_id',
+                    'to_user.display_name(to_fullname)'
+                ];
+
+                $join["[>]site_users(from_user)"] = ["followers.from_user_id" => "user_id"];
+                $join["[>]site_users(to_user)"] = ["followers.to_user_id" => "user_id"];
+                $where = ["relation_status" => 1, "OR" => ["from_user_id" => $user_id, "to_user_id" => $user_id]];
+                $where["LIMIT"] = 5;
+
+                $user_followers = DB::connect()->select('followers', $join, $columns, $where);
+                $i = 1;
+
+                foreach ($user_followers as $user_follower) {
+
+                    $user_follower['display_name'] = $user_follower['from_fullname'];
+                    $user_follower['user_id'] = $user_follower['from_user_id'];
+
+                    if ((int)$user_follower['from_user_id'] === (int)$user_id) {
+                        $user_follower['display_name'] = $user_follower['to_fullname'];
+                        $user_follower['user_id'] = $user_follower['to_user_id'];
+                    }
+
+                    $followers_list[$i]['title'] = $user_follower['display_name'];
+                    $followers_list[$i]['image'] = get_image(['from' => 'site_users/profile_pics', 'search' => $user_follower['user_id']]);
+                    $followers_list[$i]['attributes']['class'] = 'get_info hide_tooltip_on_click';
+                    $followers_list[$i]['attributes']['user_id'] = $user_follower['user_id'];
+                    $i = $i+1;
+                }
+
+                if (count($followers_list) > 0) {
+
+                    $followers_list[$i]['title'] = Registry::load('strings')->view_all;
+                    $followers_list[$i]['image'] = Registry::load('config')->site_url.'assets/files/defaults/view_all.png';
+                    $followers_list[$i]['attributes']['class'] = 'load_aside hide_tooltip_on_click';
+                    $followers_list[$i]['attributes']['load'] = 'site_user_followers';
+                    $followers_list[$i]['attributes']['data-user_id'] = $user_id;
+
+                    $output['content'][5] = new stdClass();
+                    $output['content'][5]->field['title'] = Registry::load('strings')->followers;
+                    $output['content'][5]->field['images'] = $followers_list;
+                    $output['content'][5]->field['class'] = 'rounded';
+
+                    if (role(['permissions' => ['follow_system' => 'view_followers_number_in_the_profile']])) {
+                        $output['content'][5]->field['title'] .= ' ['.count($user_followers).']';
+                    }
+                }
+            }
+        }
+    }
+
     if (role(['permissions' => ['profile' => 'view_email_address']])) {
-        $output['content'][5] = new stdClass();
-        $output['content'][5]->field['title'] = Registry::load('strings')->email_address;
-        $output['content'][5]->field['value'] = $user['email_address'];
+        $output['content'][8] = new stdClass();
+        $output['content'][8]->field['title'] = Registry::load('strings')->email_address;
+        $output['content'][8]->field['value'] = $user['email_address'];
     }
 
     if (role(['permissions' => ['profile' => 'view_phone_number']])) {

@@ -263,6 +263,14 @@ if (role(['permissions' => ['site_roles' => ['create', 'edit']], 'condition' => 
         "view_followers" => Registry::load('strings')->view_followers,
         "send_follow_requests" => Registry::load('strings')->send_follow_requests,
         "receive_follow_requests" => Registry::load('strings')->receive_follow_requests,
+        "view_follow_notifications" => Registry::load('strings')->view_follow_notifications,
+        "view_followers_number_in_the_profile" => Registry::load('strings')->view_followers_number_in_the_profile,
+        "view_followers_names_in_the_profile" => Registry::load('strings')->view_followers_names_in_the_profile,
+        "deduct_coins_per_follow" => Registry::load('strings')->deduct_coins_per_follow,
+    ];
+
+    $form['fields']->coins_amount_per_follow = [
+        "title" => Registry::load('strings')->coins_amount_per_follow, "tag" => 'input', "type" => 'number', "class" => 'field', "value" => 0
     ];
 
     $form['fields']->private_conversations = [

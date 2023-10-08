@@ -148,18 +148,47 @@ function get_info(data) {
                     $('.main .info_panel > .controls > div > span').html('');
 
                     if (data.button !== undefined) {
+                        var buttonsData = data.button;
+                        var $controls = $('.main .info_panel > .controls > div');
 
-                        $('.main .info_panel > .controls > div > span').removeAttr('class');
-                        $('.main .info_panel > .controls > div > span').addClass(data.button.class);
-                        $('.main .info_panel > .controls > div > span').html('<span></span>');
-
-
-                        $.each(data.button.attributes, function(attrkey, attrval) {
-                            $('.main .info_panel > .controls > div > span > span').attr(attrkey, attrval);
+                        // Remove existing buttons (only spans with class 'button')
+                        $controls.find('span.button').remove();
+                    
+                        $.each(buttonsData, function (key, data) {
+                            // Create a new button element wrapped with <span class="button">
+                            var $button = $('<span>').addClass('button');
+                            var $innerButton = $('<span>').addClass(data.class);
+                    
+                            // Add attributes to the inner button
+                            $.each(data.attributes, function (attrKey, attrValue) {
+                                $innerButton.attr(attrKey, attrValue);
+                            });
+                    
+                            // Set the button text
+                            $innerButton.text(data.title);
+                            // Add class 'mx-1' to all buttons except the last one
+                            if (key != Object.keys(buttonsData).length) {
+                                $innerButton.addClass('mx-1');
+                            }
+                    
+                            // Append the inner button to the outer button
+                            $button.append($innerButton);
+                    
+                            // Append the button to the controls div
+                            $controls.append($button);
                         });
 
-                        $('.main .info_panel > .controls > div > span > span').replace_text(data.button.title);
-                        $('.main .info_panel > .controls > div > span').removeClass('d-none');
+                        // $('.main .info_panel > .controls > div > span').removeAttr('class');
+                        // $('.main .info_panel > .controls > div > span').addClass(data.button.class);
+                        // $('.main .info_panel > .controls > div > span').html('<span></span>');
+
+
+                        // $.each(data.button.attributes, function(attrkey, attrval) {
+                        //     $('.main .info_panel > .controls > div > span > span').attr(attrkey, attrval);
+                        // });
+
+                        // $('.main .info_panel > .controls > div > span > span').replace_text(data.button.title);
+                        // $('.main .info_panel > .controls > div > span').removeClass('d-none');
 
                     }
 
