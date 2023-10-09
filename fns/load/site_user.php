@@ -214,8 +214,18 @@ if (isset($user[0])) {
                         $output['button'][$button_index] = new stdClass();
                         $output['button'][$button_index]->class = 'button';
                         $output['button'][$button_index]->title = Registry::load('strings')->follow;
-                        $output['button'][$button_index]->attributes['class'] = 'api_request';
-                        $output['button'][$button_index]->attributes['data-add'] = 'follow';
+                        
+                        if (role(['permissions' => ['follow_system' => 'deduct_coins_per_follow']]))
+                        {
+                            $output['button'][$button_index]->attributes['class'] = 'load_form';
+                            $output['button'][$button_index]->attributes['form'] = 'follow';
+                        }
+                        else
+                        {
+                            $output['button'][$button_index]->attributes['class'] = 'api_request';
+                            $output['button'][$button_index]->attributes['data-add'] = 'follow';
+                        }
+                        
                         $output['button'][$button_index]->attributes['data-user_id'] = $user['user_id'];
                         $output['button'][$button_index]->attributes['data-info_box'] = true;
 

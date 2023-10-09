@@ -56,6 +56,13 @@ if (Registry::load('settings')->follow_system === 'enable') {
                                 ]);
                             }
 
+                            if($data['deduct_coins'])
+                            {
+                                $user_balance = DB::connect()->select("user_coins", "coins_balance", ["user_id" => $current_user_id]);
+                                // Update recipient's balance
+                                DB::connect()->update("user_coins", ["coins_balance" => ((float)$user_balance[0] - $data['deduct_coins'])], ["user_id" => $current_user_id]);
+                            }
+
                             // if (isset(Registry::load('settings')->send_push_notification->on_follower_request)) {
                             //     include_once('fns/push_notification/load.php');
 
